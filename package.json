@@ -10,12 +10,18 @@
     "tauri:serve": "vue-cli-service tauri:serve"
   },
   "dependencies": {
+    "@tauri-apps/api": "^1.0.0-beta.8",
     "core-js": "^3.6.5",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0",
     "vuex": "^4.0.0-0"
   },
   "devDependencies": {
+    "@iconify-icons/bx": "^1.1.2",
+    "@iconify-icons/carbon": "^1.1.6",
+    "@iconify-icons/la": "^1.1.0",
+    "@iconify-icons/uim": "^1.1.1",
+    "@iconify/vue": "^3.0.0",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-plugin-router": "~4.5.0",

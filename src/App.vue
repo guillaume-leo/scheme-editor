@@ -1,18 +1,79 @@
 <template>
-  <div id="nav">
+  <!-- <div id="nav">
     <router-link to="/">Home</router-link> |
     <router-link to="/about">About</router-link>
-  </div>
+  </div> -->
   <router-view/>
 </template>
 
 <style>
+      
+
+        /* tells the browser how the bar will look */
+          
+        ::-webkit-scrollbar {
+            width: 7.5px;
+            height: 7.5px;
+        }
+        /*tells the browser how the arrows will appear*/
+          
+        ::-webkit-scrollbar-button:single-button {
+            background-color: red;
+            height: 16px;
+            width: 16px;
+            display: none;
+        }
+        /* tells the browser how the scrollable 
+          handle would look like */
+          
+        ::-webkit-scrollbar-thumb {
+            background: rgba(100,100,100,0.8);
+            border-radius: 15px;
+            
+        }
+        /* tells the browser how will the 
+         path of the handle will look like */
+          
+        ::-webkit-scrollbar-track {
+            background: rgba(0.0,0.0,0.0,0.5);
+        }
+        /* works the same as ::-webkit-scrollbar-track 
+              but tells the browser how the path where 
+              the handle is not present currently*/
+        /* ::-webkit-scrollbar-track-piece{
+            background: green;
+        } */
+        /* tells the browser how will the point 
+           where vertical and  horizontal meet will look like*/
+        /* ::-webkit-scrollbar-corner{
+            background: orange ;
+            display: solid;
+        } */
+        /* resizer*/
+          
+        ::-webkit-resizer {
+            background: pink;
+        }
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Fira Code', Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  height: 100vh;
+  margin:0;
+  padding: 0;
+  overflow: hidden;
+}
+
+input{
+        font-family: 'Fira Code';
+}
+
+body{
+    margin:0;
+  padding: 0;
 }
 
 #nav {
