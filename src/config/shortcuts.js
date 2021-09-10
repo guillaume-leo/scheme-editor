@@ -10,6 +10,13 @@ export const ALL_SHORTCUTS = ()=>{
         }
     )
 
+    hotkeys('ctrl+r',
+        (event, handler)=>{
+        event.preventDefault() 
+        console.log(handler) 
+        }
+    )
+
     hotkeys('alt+c',
         (event)=>{
         event.preventDefault() 
@@ -18,6 +25,11 @@ export const ALL_SHORTCUTS = ()=>{
             .focus()
         }
     )
-
+    // make sure that shortcuts are still working inside INPUT/TEXT/TEXTAREA elements
+    hotkeys.filter = function(event){
+        var tagName = (event.target || event.srcElement).tagName;
+        hotkeys.setScope(/^(INPUT|TEXTAREA|SELECT)$/.test(tagName) ? 'input' : 'other');
+        return true;
+      }
 
 }
