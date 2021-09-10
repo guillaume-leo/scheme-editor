@@ -7,7 +7,6 @@
 <script>
 import { COMMANDS } from '../constants/Commands.js'
 import { SEND_TO_CONSOLE } from '@/store/mutation-types'      
-      
 
 export default {
     name: 'Command',
@@ -35,6 +34,7 @@ export default {
 <style scoped>
     input{
         background-color: rgba(0.0,0.0,0.0,0.0);
+        border: none;
         border-color: rgba(0.0,0.0,0.0,0.0);
         width: 100%;
         height: 100%;
@@ -42,6 +42,7 @@ export default {
     }
 
     input:focus {
+        border: none;
         outline: none;
         text-decoration: none !important;
 

@@ -21,11 +21,13 @@
 
 
 .container{
+
    /* COLOR OF THE APP */
   background-color: rgba(0.0,0.0,0.0,1.0);
   /* ------------------------ */
   color: aliceblue;
   height: 100%;
+  width: 99%;
   margin:0;
   padding: 0;
   display: grid;
@@ -74,6 +76,12 @@
 import TitleBar from '@/components/TitleBar.vue'
 import Console from '@/components/Console.vue'
 import Command from '../components/Command.vue'
+
+import { ALL_SHORTCUTS } from '@/config/shortcuts'
+ALL_SHORTCUTS()
+
+
+
 export default {
   name: 'Home',
   components: {
