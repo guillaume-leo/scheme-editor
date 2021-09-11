@@ -1,4 +1,5 @@
 import hotkeys from 'hotkeys-js';
+// import store from '@/store'
 
 
 
@@ -25,6 +26,8 @@ export const ALL_SHORTCUTS = ()=>{
             .focus()
         }
     )
+
+
     // make sure that shortcuts are still working inside INPUT/TEXT/TEXTAREA elements
     hotkeys.filter = function(event){
         var tagName = (event.target || event.srcElement).tagName;
