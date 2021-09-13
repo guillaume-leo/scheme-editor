@@ -52,14 +52,13 @@
         /* resizer*/
           
         ::-webkit-resizer {
-            background: pink;
+            background: rgba(255,255,255,0.35);
         }
 
 #app {
   font-family: 'Fira Code', Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
   height: 100vh;
   margin:0;
@@ -67,6 +66,26 @@
   overflow: hidden;
 }
 
+/* CODEMIRROR STYLING  */
+
+    .CodeMirror, .CodeMirror-gutters{
+        padding: 0;
+        margin: 0;
+        background: rgba(0.0, 0.0, 0.0, 0.0) !important;
+        border: solid 0.5px;
+        border-color: rgba(255,255,255,0.35);
+
+    }
+    .CodeMirror{
+        /* resize: both; */
+        /* overflow: auto !important; */
+        min-height: 50vh;
+        min-width: 35vh;
+    }
+
+    span{
+      background-color: rgba(0.0,0.0,0.0,0.35);
+    }
 input{
         font-family: 'Fira Code';
 }
@@ -78,14 +97,5 @@ body{
 
 #nav {
   padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
 }
 </style>

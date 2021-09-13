@@ -3,6 +3,17 @@
   <div class="container">
     <TitleBar/>
     <div class="a">
+     <Editor v-for="id in editorsId" :key="id">
+
+     </Editor>
+
+
+
+      <!-- <Editor class="editor"/> -->
+
+      <!-- <Editor class="editor"/>
+      <Editor class="editor"/>
+      <Editor class="editor"/> -->
     </div>
     <div class="b">
     </div>
@@ -27,7 +38,7 @@
   /* ------------------------ */
   color: aliceblue;
   height: 100%;
-  width: 99%;
+  width: 100%;
   margin:0;
   padding: 0;
   display: grid;
@@ -42,8 +53,8 @@
 
 
 .a, .b, .c, .d{
-  padding: 0;
-  margin: 0;
+  padding: 1px;
+  margin: 1px;
   border: solid;
   border-width: 0.5px;
   border-color: rgba(255, 255, 255, 0.4);
@@ -51,8 +62,27 @@
 }
 
 .a{
+  padding: 1px;
+  margin: 1px;
+  overflow: auto;
   grid-area: a;
+  max-width: 100%;
+  /* display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-content: stretch; */
+
+  display: grid;
+  grid-auto-flow: row;
+  grid-gap:5px;
+  /* justify-content: center; */
+
 }
+
+    p{
+        margin: 0;
+        text-align: end;
+    }
 
 .b{
   grid-area: b;
@@ -75,7 +105,8 @@
 <script>
 import TitleBar from '@/components/TitleBar.vue'
 import Console from '@/components/Console.vue'
-import Command from '../components/Command.vue'
+import Command from '@/components/Command.vue'
+import Editor from '@/components/Editor.vue'
 
 import { ALL_SHORTCUTS } from '@/config/shortcuts'
 ALL_SHORTCUTS()
@@ -87,13 +118,24 @@ export default {
   components: {
     TitleBar,
     Console,
-    Command
+    Command,
+    Editor,
   },
-  methods:{
-    myfunc(){
-      console.log("hyahaaa");
+  data(){
+    return {
+      editorsId:[]
     }
-  } 
+  },
+  computed:{
+    getEditorsName(){
+      return this.$store.getters['editors/getNames']
+    }
+  },
+  watch:{
+    getEditorsName(newVal){
+      this.editorsId = newVal
+    }
+  }
 }
 
 </script>
