@@ -140,22 +140,25 @@ export default {
         }
         this.cm = CodeMirror.fromTextArea(elem, options)
         this.cm.setSize("99%", '99%')
+        this.cm.on('blur', ()=>{
+          console.log(this.cm);
+        })
+        this.cm.on('focus', ()=>{
+          console.log(this.cm);
+        })
+        this.$store.commit('editors/test', this.cm)
     },
     methods:{
 
-        changeTheme(){
-            this.CodeMirror.setOption('theme',this.$store.getters.getEditorTheme)
-        }
     },
     computed:{
-        getEditorTheme(){
-            return this.$store.getters.getEditorTheme
-      }
+        getTheme(){
+            return this.$store.getters['editors/getTheme']
+        }
     },
     watch:{
-        getEditorTheme(newVal){
+        getTheme(newVal){
             this.cm.setOption('theme', newVal)
-           
         }
     }
 

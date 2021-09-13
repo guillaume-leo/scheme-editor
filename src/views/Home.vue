@@ -3,13 +3,9 @@
   <div class="container">
     <TitleBar/>
     <div class="a">
-      <Editor />
-      <Editor />  
-      <Editor />  
-      <Editor />  
-      <Editor />  
+     <Editor v-for="id in editorsId" :key="id">
 
-
+     </Editor>
 
 
 
@@ -42,7 +38,7 @@
   /* ------------------------ */
   color: aliceblue;
   height: 100%;
-  width: 99%;
+  width: 100%;
   margin:0;
   padding: 0;
   display: grid;
@@ -124,6 +120,21 @@ export default {
     Console,
     Command,
     Editor,
+  },
+  data(){
+    return {
+      editorsId:[]
+    }
+  },
+  computed:{
+    getEditorsName(){
+      return this.$store.getters['editors/getNames']
+    }
+  },
+  watch:{
+    getEditorsName(newVal){
+      this.editorsId = newVal
+    }
   }
 }
 

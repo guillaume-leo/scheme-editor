@@ -20,7 +20,6 @@
 
 <script>
 import { appWindow } from '@tauri-apps/api/window'
-import { CHANGE_EDITOR_THEME } from '@/store/mutation-types'
 //icons
 import { Icon } from '@iconify/vue'
 import windowMaximize from '@iconify-icons/uim/window-maximize'
@@ -47,7 +46,7 @@ export default {
   },
     methods: {
       changeTheme(){
-        this.$store.commit(CHANGE_EDITOR_THEME)
+        this.$store.commit('editors/changeTheme')
       },
       changeOpacity(){
         this.opacity -= 0.2

@@ -77,7 +77,7 @@
 
     }
     .CodeMirror{
-        resize: both;
+        /* resize: both; */
         /* overflow: auto !important; */
         min-height: 50vh;
         min-width: 35vh;
@@ -97,14 +97,5 @@ body{
 
 #nav {
   padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
 }
 </style>

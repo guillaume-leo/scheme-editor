@@ -14,7 +14,7 @@ export default {
     name: 'Console',
     computed:{
       getAllData(){
-        return this.$store.getters.getConsoleData
+        return this.$store.getters['console/getData']
       }
     }
 }
@@ -26,7 +26,7 @@ p{
     padding: 0;
     margin: 0;
     text-align: left;
-    font-size: 12px;
+    font-size: 8px;
     color: rgba(255, 255, 255, 0.7);
 }
 </style>

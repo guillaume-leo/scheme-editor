@@ -1,3 +1,7 @@
 export const SEND_TO_CONSOLE = 'SEND_TO_CONSOLE'
 export const CLEAR_CONSOLE = 'CLEAR_CONSOLE'
 export const CHANGE_EDITOR_THEME = 'CHANGE_EDITOR_THEME'
+
+
+//editors
+export const ADD_EDITOR_TO_REF = 'ADD_EDITOR_TO_REF'

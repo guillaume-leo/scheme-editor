@@ -6,7 +6,6 @@
 
 <script>
 import { COMMANDS } from '../constants/Commands.js'
-import { SEND_TO_CONSOLE } from '@/store/mutation-types'      
 
 export default {
     name: 'Command',
@@ -20,7 +19,7 @@ export default {
                 this.command = ''
                 return
             }
-            this.$store.commit(SEND_TO_CONSOLE,`${car} doesn't exist! Type 'info' to get the full command's list`)
+            this.$store.commit('console/print',`${car} doesn't exist! Type 'info' to get the full command's list`)
         },
     },
     data() {
