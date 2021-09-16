@@ -3,7 +3,8 @@
   <div class="container">
     <TitleBar/>
     <div class="a">
-     <Editor v-for="id in editorsId" :key="id">
+
+     <Editor v-for="id in editorsId.slice().reverse()" :key="id" :id="id">
 
      </Editor>
 
@@ -16,6 +17,7 @@
       <Editor class="editor"/> -->
     </div>
     <div class="b">
+      <Info/>
     </div>
     <div class="c">
       <Command />
@@ -86,6 +88,9 @@
 
 .b{
   grid-area: b;
+  padding: 1px;
+  margin: 1px;
+  overflow: auto;
 }
 
 .c{
@@ -107,6 +112,7 @@ import TitleBar from '@/components/TitleBar.vue'
 import Console from '@/components/Console.vue'
 import Command from '@/components/Command.vue'
 import Editor from '@/components/Editor.vue'
+import Info from '@/components/Info.vue'
 
 import { ALL_SHORTCUTS } from '@/config/shortcuts'
 ALL_SHORTCUTS()
@@ -120,11 +126,14 @@ export default {
     Console,
     Command,
     Editor,
+    Info
   },
   data(){
     return {
       editorsId:[]
     }
+  },
+  methods:{
   },
   computed:{
     getEditorsName(){

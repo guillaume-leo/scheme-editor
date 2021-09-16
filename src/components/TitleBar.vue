@@ -63,7 +63,7 @@ export default {
          const result = await confirm("Do you really want to leave?")
          if (result) appWindow.close()
       }
-  },
+  }
 }
 </script>
 
