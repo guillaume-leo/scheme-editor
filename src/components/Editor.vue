@@ -1,20 +1,22 @@
 <template>
-            <textarea v-model="content" id="editor" cols="30" rows="10"></textarea>
+  <p>{{this.id}}</p>
+<div  v-bind="{ id: this.editorId }" class="editor">
+</div>
 </template>
 
 <script>
 
-import * as CodeMirror from 'codemirror'
-import 'codemirror/lib/codemirror.css'
-import 'codemirror/mode/scheme/scheme.js'
-import '../config/codemirrorThemes'
-import * as parinferCodeMirror from 'parinfer-codemirror'
-import { parseBuffer } from '@/config/parseBuffer'
+
 import * as parinfer from 'parinfer'
+// import _ from 'lodash'
 
+//CODEMIRROR 6
+import {StreamLanguage} from "@codemirror/stream-parser"
+import {EditorState, EditorView, basicSetup} from "@codemirror/basic-setup"
+import { scheme } from "@codemirror/legacy-modes/mode/scheme"
+import { oneDark } from '@/config/cm-theme'
 
-const result = parinfer.indentMode("(def foo\n [a b\n; c])")
-console.log(result)
+import {snippetCompletion} from "@codemirror/autocomplete"
 
 const text =
 `
@@ -31,56 +33,91 @@ export default {
         return{
             content: text,
             theme:'abbott',
-            editorId: this.id
+            editorId: `__${this.id}__`
         }
     },
     mounted(){
-        const rand = Math.random().toString(16).substr(2, 8);
-        const elem = document.getElementById('editor')
-        const options = {
-            mode: "scheme",
-            lineNumbers: true,
-            theme: this.theme
+
+
+//  PARINFER START
+
+function offsetToPos(doc, offset) {
+  let line = doc.lineAt(offset)
+  return {line: line.number - 1, ch: offset - line.from}
+}
+
+let prevOffset = 0
+document.getElementById(this.editorId).addEventListener('keyup', (key)=>{
+  const tooltip = this.view.state.values[4].open ? true : false
+  const snippet = this.view.state.values[6].ranges ? true : false
+  if (tooltip || snippet) return
+  if (key.ctrlKey || key.shiftKey || key.key === 'Shift'|| key.key === 'Control') return
+  const cm = this.view.state
+  const currOffset = cm.selection.main.head
+  const currText = cm.doc.toString()
+  prevOffset = prevOffset > cm.doc.length ? cm.doc.length : prevOffset
+      const options = {
+        cursorLine:offsetToPos(cm.doc, currOffset).line,
+        cursorX: offsetToPos(cm.doc, currOffset).ch,
+        prevCursorLine:offsetToPos(cm.doc, prevOffset).line,
+        prevCursorX:offsetToPos(cm.doc, prevOffset).ch,
+      }
+      
+      const result = parinfer.indentMode(currText,options)
+      const {cursorLine, cursorX} = result
+      const parinferText = result.text.split('\n')
+      let parinferCursor = 0
+      for (let i = 0; i < cursorLine;  i++){
+        const lineLength = parinferText[i].length === 0 ? 1 : parinferText[i].length + 1
+        parinferCursor += lineLength
+      }
+      parinferCursor += cursorX
+      prevOffset = parinferCursor
+      this.view.dispatch({
+        changes: {
+          from: 0, 
+          to: cm.doc.length, 
+          insert: result.text
+        },
+        selection: {
+          anchor: parinferCursor
         }
-        this.cm = CodeMirror.fromTextArea(elem, options)
-        this.cm.setSize("99%", '99%')
-        const editorId = `${rand}_${this.editorId}` 
-        const ref = this.cm
-        const htmlNode = this.cm.getWrapperElement()
-        htmlNode.id = editorId
-        this.$store.commit('editors/addRef', {ref, editorId})
-        parinferCodeMirror.init(ref, 'smart', {forceBalance: true})
-        ref.on('blur', ()=>{
-          this.$store.commit('editors/focused', '')
+      })
+})
+
+//  PARINFER END
+const schemeLang = StreamLanguage.define(scheme) 
+const initialState = EditorState.create({
+  doc: 
+`
+(define (hello)
+  (post 'Hello_World))
+`,
+  extensions: [
+    basicSetup,
+    schemeLang,
+    schemeLang.data.of({
+    autocomplete: [
+      snippetCompletion(
+`(define (#{name})
+  (post #{name}))#{}`, 
+        {
+          label: 'define',
+          detail: 'this is something'
         })
-        ref.on('focus', ()=>{
-          this.$store.commit('editors/focused', this.editorId)
-          console.log(parseBuffer(ref.getValue()))
-        })
+    ]
+    }),
+    oneDark,
+    ],
+});
 
-        //TO RETHINK
-        ref.on('change', (cm, e)=>{
-          
 
-          if ((e.origin === '+input' || e.origin === 'paste') && cm.getValue().includes('lambda')){
-            // const currentLine = cm.getCursor().line
-            // const prevCurrentLine = "a"
-            console.log(e);
-            const cursorPos = {
-              line:cm.getCursor().line,
-              ch:cm.getCursor().ch -1
-            }            
-            let text =  cm.getValue()            
-            cm.setValue(text.replaceAll('lambda', 'λ'));
-            cm.setCursor(cursorPos) 
-          }
- 
+  this.view = new EditorView({
+  parent: document.getElementById(this.editorId),
+  state: initialState,
+});
 
-          
-        })
-// (salut lambda ())
 
-        ref.focus()
     },
     methods:{
 
@@ -97,14 +134,9 @@ export default {
         }
     },
     watch:{
-        getTheme(newVal){
-            this.cm.setOption('theme', newVal)
-        }
 
     },
     unmounted(){
-      this.cm.getWrapperElement().parentNode.removeChild(this.cm.getWrapperElement());
-      this.cm=null;
     }
 
         
@@ -116,10 +148,14 @@ export default {
 
 <style scoped>
 
-
-    textarea{
-        display: none;
-        font-family: 'Fira Code' !important;
-    }
+.editor{
+/* height: 100%; */
+}
+p{
+  padding: 0;
+  margin: 0;
+  font-family: monospace;
+  color: dimgray;
+}
 
 </style>
