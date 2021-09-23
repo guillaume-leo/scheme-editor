@@ -1,8 +1,5 @@
 <template>
   <div data-tauri-drag-region class="titlebar">
-      <div class="titlebar-button">
-        <button @click="changeTheme">T</button>
-      </div>
       <div class="titlebar-button" id="titlebar-opacity">
         <Icon @click="changeOpacity" width="30" :icon="icons.opacityIcon" />
       </div>
@@ -45,9 +42,6 @@ export default {
 	}
   },
     methods: {
-      changeTheme(){
-        this.$store.commit('editors/changeTheme')
-      },
       changeOpacity(){
         this.opacity -= 0.2
         if (this.opacity < 0) this.opacity = 1  

@@ -1,6 +1,6 @@
 <template>
   <div>
-      <input id='commandInput' @keyup.enter="execCommand" type="text" name="" v-model="command">
+      <input tabindex="-1" id='commandInput' @keyup.enter="execCommand" type="text" name="" v-model="command">
   </div>
 </template>
 

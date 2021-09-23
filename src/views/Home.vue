@@ -4,17 +4,9 @@
     <TitleBar/>
     <div class="a">
 
-     <Editor v-for="id in editorsId.slice().reverse()" :key="id" :id="id">
-
+     <Editor v-for="id in editorsId.slice()" :key="id" :id="id">
      </Editor>
 
-
-
-      <!-- <Editor class="editor"/> -->
-
-      <!-- <Editor class="editor"/>
-      <Editor class="editor"/>
-      <Editor class="editor"/> -->
     </div>
     <div class="b">
       <Info/>
@@ -34,6 +26,8 @@
 
 
 .container{
+
+
 
    /* COLOR OF THE APP */
   background-color: rgba(0.0,0.0,0.0,1.0);
@@ -74,7 +68,7 @@
   flex-direction: row;
   align-content: stretch; */
 
-  display: grid;
+  /* display: grid; */
   grid-auto-flow: row;
   grid-gap:5px;
   /* justify-content: center; */

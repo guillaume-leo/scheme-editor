@@ -67,25 +67,11 @@
 }
 
 /* CODEMIRROR STYLING  */
+/*  */
 
-    .CodeMirror, .CodeMirror-gutters{
-        padding: 0;
-        margin: 0;
-        background: rgba(0.0, 0.0, 0.0, 0.0) !important;
-        border: solid 0.5px;
-        border-color: rgba(255,255,255,0.35);
-
-    }
-    .CodeMirror{
-        /* resize: both; */
-        /* overflow: auto !important; */
-        min-height: 50vh;
-        min-width: 35vh;
-    }
-
-    span{
+    /* span{
       background-color: rgba(0.0,0.0,0.0,0.35);
-    }
+    } */
 input{
         font-family: 'Fira Code';
 }
