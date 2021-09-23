@@ -1,6 +1,3 @@
-import { THEMES } from '@/constants/Themes'
-import store from '@/store'
-// import _ from 'lodash'
 
 function getAllIndexes(arr, val) {
     var indexes = [], i;
@@ -17,11 +14,13 @@ export const editors = {
         refs: [],
         editorId:[],
         names:[],
-        themeIndex: 0,
-        themeLabel:'',
-        focused:''
+        focused:'',
+        sExpr:{}
     }),
     mutations: {
+        ['sExpr'] (state, obj) {
+            state.sExpr = obj.sExpr  
+        },
 
         ['addRef'] (state, obj) {
             state.refs = [...state.refs, obj.ref]
@@ -38,12 +37,6 @@ export const editors = {
             });
         },
 
-        ['changeTheme'](state){
-            state.themeIndex ++
-            state.themeLabel = THEMES[state.themeIndex % THEMES.length]
-            
-            store.commit('console/print', state.themeLabel, { root: true })
-        },
         ['kill'](state, nameList){
             [...new Set(nameList)].forEach(e => {
                 let index = getAllIndexes(state.names, e)
@@ -54,17 +47,17 @@ export const editors = {
         }
     },
     getters: {
-        getEditors(state){
+        getRefs(state){
             return state.refs
-        },
-        getTheme(state){
-            return state.themeLabel
         },
         getNames(state) {
             return state.names
         },
-        getFocused(state) {
-            return state.focused
+        getEditorsId(state){
+            return state.editorId
+        },
+        getsExpr(state){
+            return state.sExpr
         }
     }
 }

@@ -3,20 +3,15 @@ import {HighlightStyle, tags as t} from "@codemirror/highlight"
 
 const chalky = "#e5c07b",
   coral = "#e06c75",
-  cyan = "#56b6c2",
   invalid = "#ffffff",
   ivory = "#abb2bf",
   stone = "#7d8799", // Brightened compared to original to increase contrast
-  malibu = "#61afef",
-  sage = "#98c379",
-  whiskey = "#d19a66",
-  violet = "#c678dd",
   darkBackground = "#21252b",
-  highlightBackground = "#2c313a",
+  highlightBackground = "rgba(100,100,100,0.3)",
   background = "rgba(0.0,0.0,0.0,0.0)",
-  selection = "#3E4451",
-  cursor = "#528bff"
-
+  selection = "rgba(50,50,50,0.5)"
+  // cursor = "#528bff"
+console.log(chalky);
 
 export const oneDarkTheme  = EditorView.theme({
     "&": {
@@ -25,12 +20,21 @@ export const oneDarkTheme  = EditorView.theme({
       height: "100%",
       backgroundColor: background
     },
-  
-    ".cm-content": {
-      caretColor: cursor,
+
+    '@keyframes blink' : {
+      from: {backgroundColor: 'rgba(175,175,175,1.0)'},
+      to: {backgroundColor: 'rgba(0.0,0.0,0.0,0.5)'}
     },
   
-    "&.cm-focused .cm-cursor": {borderLeftColor: cursor},
+    ".cm-content": {
+      caretColor: 'rgba(255,255,255,1.0)',
+      
+    },
+  
+    "&.cm-focused .cm-cursor": {
+      borderLeftColor: 'rgba(255,255,255,1.0)',
+      },
+
     "&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection": {backgroundColor: selection},
   
     ".cm-panels": {backgroundColor: darkBackground, color: ivory},
@@ -45,7 +49,10 @@ export const oneDarkTheme  = EditorView.theme({
       backgroundColor: "#6199ff2f"
     },
   
-    ".cm-activeLine": {backgroundColor: highlightBackground},
+    ".cm-line": {
+      width: "fit-content",
+      backgroundColor: 'rgba(0.0,0.0,0.0,0.4)'
+    },
     ".cm-selectionMatch": {backgroundColor: "#aafe661a"},
   
     ".cm-matchingBracket, .cm-nonmatchingBracket": {
@@ -83,21 +90,21 @@ export const oneDarkTheme  = EditorView.theme({
 
   export const oneDarkHighlightStyle = HighlightStyle.define([
     {tag: t.keyword,
-     color: chalky},
+     color: 'red'},
     {tag: [t.name, t.deleted, t.character, t.propertyName, t.macroName],
-     color: coral},
+     color: '#f7768e'}, // post
     {tag: [t.function(t.variableName), t.labelName],
-     color: malibu},
+     color: 'pink'},
     {tag: [t.color, t.constant(t.name), t.standard(t.name)],
-     color: whiskey},
+     color: '#0db9d7'}, // define
     {tag: [t.definition(t.name), t.separator],
-     color: ivory},
+     color: 'pink'},
     {tag: [t.typeName, t.className, t.number, t.changed, t.annotation, t.modifier, t.self, t.namespace],
-     color: violet},
+     color: '#ff9e64'}, // numbers
     {tag: [t.operator, t.operatorKeyword, t.url, t.escape, t.regexp, t.link, t.special(t.string)],
-     color: cyan},
+     color: '#10B981'},
     {tag: [t.meta, t.comment],
-     color: stone},
+     color: '#c0caf5'}, // comments
     {tag: t.strong,
      fontWeight: "bold"},
     {tag: t.emphasis,
@@ -111,9 +118,9 @@ export const oneDarkTheme  = EditorView.theme({
      fontWeight: "bold",
      color: coral},
     {tag: [t.atom, t.bool, t.special(t.variableName)],
-     color: "red" },
+     color: "#7dcfff" }, // 'hello
     {tag: [t.processingInstruction, t.string, t.inserted],
-     color: sage},
+     color: "#73daca"},
     {tag: t.invalid,
      color: invalid},
   ])

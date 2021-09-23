@@ -1,8 +1,9 @@
 <template>
 <p 
     v-for="name in editors" 
-    id="name"
+    :id="name"
     :key="name"
+    :ref="name"
     
     @mousedown="select"
 >
@@ -23,8 +24,8 @@ export default {
         getNames(){
           return this.$store.getters['editors/getNames']
         },
-        getFocused(){
-          return this.$store.getters['editors/getFocused']
+        getFocusedEditor(){
+            return this.$store.getters['info/getFocusedEditor']
         }
     },
     methods:{
@@ -38,9 +39,16 @@ export default {
         getNames(newVal){
           this.editors = newVal
         },
-        getFocused(newVal){
-            this.focused = newVal
-        }        
+        getFocusedEditor(newVal){
+            const allP = Object.keys(this.$refs);
+            allP.forEach(el => {
+                this.$refs[el].classList.remove('focused')
+                // el.style.border = 'none'
+            });
+            this.$refs[newVal].classList.add('focused')
+
+        }
+       
     }
 }
 </script>
@@ -48,7 +56,7 @@ export default {
 <style scoped>
 p{  
     background-color: rgba(0.0, 0.0, 0.0, 0.0);
-    border:solid 1px;
+    border:none 1px;
     border-color: rgba(255, 255, 255, 0.5);
     padding: 0;
     margin: 2px;
@@ -57,7 +65,6 @@ p{
     color: rgba(255, 255, 255, 0.7);
     font-family: 'Fira Code';
     cursor: crosshair;
-
 }
 
 p:hover{
@@ -66,6 +73,6 @@ p:hover{
 }
 
 .focused{
-    background-color: red;
+    border: solid 1px;
 }
 </style>

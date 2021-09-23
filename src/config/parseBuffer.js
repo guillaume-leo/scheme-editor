@@ -16,6 +16,9 @@ parseBuffer:
     ] 
 ______________________________________________________
 */
+
+// import store from '@/store'
+
 export const parseBuffer = str => {
 
     let prevVal = 0
