@@ -1,5 +1,5 @@
 <template>
-  <p>{{this.id}}</p>
+  <p>{{this.name}}</p>
 <div  v-bind="{ id: this.editorId }" @keyup="parinfer" class="editor">
 </div>
 </template>
@@ -12,142 +12,64 @@ import * as parinfer from 'parinfer'
 
 //CODEMIRROR 6
 import {StreamLanguage} from "@codemirror/stream-parser"
-import {keymap} from "@codemirror/view"
 import {EditorState, EditorView, basicSetup} from "@codemirror/basic-setup"
 import { scheme } from "@codemirror/legacy-modes/mode/scheme"
 import { oneDark } from '@/config/cm-theme'
 import {snippets} from "@/config/snippets"
-import {Decoration} from "@codemirror/view"
-import {StateField, StateEffect} from "@codemirror/state"
 
-import { parseBuffer } from '@/config/parseBuffer'
-import { parseBufferSnippets } from '@/config/parseBufferSnippets'
+// import _ from 'lodash'
 
-const addUnderline = StateEffect.define()
+// import { parseBuffer } from '@/config/parseBuffer'
+// import { parseBufferSnippets } from '@/config/parseBufferSnippets'
 
-const underlineField = StateField.define({
-  create() {
-    return Decoration.none
-  },
-  update(underlines, tr) {
-    underlines = underlines.map(tr.changes)
-    for (let e of tr.effects) if (e.is(addUnderline)) {
-      underlines = underlines.update({
-        add: [underlineMark.range(e.value.from, e.value.to)]
-      })
-    }
-    return underlines
-  },
-  provide: f => EditorView.decorations.from(f)
-})
-
-const underlineMark = Decoration.mark({class: "cm-blink"})
-
-const underlineTheme = EditorView.baseTheme({
-  ".cm-blink": {  animationName: 'blink',
-                  animationDuration: '1s',
-                  borderRadius:'2.5px',
-                }
-})
-
-
-function underlineSelection(view) {
-  let effects = view.state.selection.ranges
-    .filter(r => !r.empty)
-    .map(({from, to}) => addUnderline.of({from, to}))
-  if (!effects.length) return false
-
-  if (!view.state.field(underlineField, false))
-    effects.push(StateEffect.appendConfig.of([underlineField,
-                                              underlineTheme]))
-  view.dispatch({effects})
-  return true
-}
-
-const underlineKeymap = keymap.of([{
-  key: "Mod-Enter",
-  preventDefault: true,
-  run: underlineSelection
-}])
-
-const isNumeric = (str) => {
-  if (typeof str != "string") return false // we only process strings!  
-  return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
-         !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
-}
 
 const  offsetToPos = (doc, offset) => {
   let line = doc.lineAt(offset)
   return {line: line.number - 1, ch: offset - line.from}
 }
 
-const incDec = (num) =>{
-  document.addEventListener('keydown', (key)=>{
-    if (key.altKey && key.ctrlKey && key.shiftKey) return key.key + num
-  })
-  return num
-}
-
-const test = (fn)=>{
-  console.log(fn);
-}
-
-const keyboardMappings = keymap.of(
-[
-  {
-  key: "Mod-Shift-Alt-ArrowUp",
-  preventDefault: true,
-  run: ()=>{
-    test('up')
-    }
-  },
-  {
-  key: "Mod-Shift-Alt-ArrowDown",
-  preventDefault: true,
-  run: ()=>{
-    test('down')
-  }
-}
-])
-
 export default {
     name:'Editor',
     props:{
-      id: String
+      name: String,
+      code: String
     },
     data(){
         return{
-            content: `;%s def\n(define (hello)\n\t(post 'Hello_World 123 "salut"))\n;%s-end`,
-            theme:'abbott',
-            editorId: `__${this.id}__`,
-            prevOffset: 0
+            editorId: `__${this.name}__`,
+            prevOffset: 0,
+            codeFromVuex:''
         }
     },
     mounted(){
 
-      const onChange = EditorView.updateListener.of((obj) => {
-        const selection = obj.state.selection.ranges[0]
-        if (obj.view.hasFocus) this.$store.commit('info/focusedEditor', this.id)
-        const cm = this.view.state
-        const id = this.editorId
-        const currText = cm.doc.toString()
-        const selectedText = currText.slice(selection.from, selection.to)
-        if (isNumeric(selectedText)) console.log(incDec(parseFloat(selectedText)))
-        parseBufferSnippets(currText)
-        this.$store.commit('editors/sExpr', {
-          id : id,
-          sExpr : parseBuffer(currText)
-          })
-      })
+      // const onChange = EditorView.updateListener.of((obj) => {
+      //   if (obj.view.hasFocus) this.$store.commit('info/focusedEditor', this.id)
+      //   const cm = this.view.state
+      //   const id = this.editorId
+      //   const currText = cm.doc.toString()
+      //   parseBufferSnippets(currText)
+      //   this.$store.commit('editors/sExpr', {
+      //     id : id,
+      //     sExpr : parseBuffer(currText)
+      //     })
+      // })
 
+      const onChange = EditorView.updateListener.of(() => {
+        // if (obj.view.hasFocus) this.$store.commit('info/focusedEditor', this.id)
+        const cm = this.view.state
+        const currText = cm.doc.toString()
+        this.$store.commit('editors/updateCode', {
+          name: this.name,
+          code: currText
+        })
+      })
       const schemeLang = StreamLanguage.define(scheme) 
       const initialState = EditorState.create({
-        doc: this.content,
+        doc: this.code,
         extensions: [
           basicSetup,
           schemeLang,
-          keyboardMappings,
-          underlineKeymap,
           onChange,
           schemeLang.data.of({
           autocomplete: snippets
@@ -165,10 +87,8 @@ export default {
 
       this.$store.commit('editors/addRef', {
         ref: this.view.state,
-        editorId:this.editorId
+        name:this.name
       })
-
-
     },
     methods:{
       parinfer(key){
@@ -209,22 +129,34 @@ export default {
                 anchor: parinferCursor
               }
             })
-      }
+      },
     },
     computed:{
-      getRefs(){
-        return  this.$store.getters['editors/getRefs']
-      },
-      getNames(){
-        return this.$store.getters['editors/getNames']
-      },
-      getsExpr(){
-        return this.$store.getters['editors/getsExpr']
+      getEditors(){
+        return JSON.stringify(this.$store.getters['editors/getEditors'])
       }
     },
     watch:{
-      // getsExpr(newVal){
-      //   console.log(newVal[0]);
+      // getEditors: {
+        // handler(newVal, oldVal){
+
+        //   const cmName = this.name
+        //   const newCode = JSON.parse(newVal)
+        //   const oldCode = JSON.parse(oldVal)
+
+        //   const index =_.findIndex(newCode, o => { return o.name == cmName })
+        //   if (index === -1) return
+        //   if (newCode[index].code === oldCode[index].code) return
+        //   console.log(`${cmName} changed`);
+          // this.view.dispatch({
+          //   changes: {
+          //     from: 0, 
+          //     to: this.view.state.doc.length, 
+          //     insert: newCode[index].code
+          //   }
+          // })
+      //   },
+      //   deep: true
       // }
     },
     unmounted(){

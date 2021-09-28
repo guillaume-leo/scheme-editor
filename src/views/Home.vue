@@ -3,8 +3,10 @@
   <div class="container">
     <TitleBar/>
     <div class="a">
-
-     <Editor v-for="id in editorsId.slice()" :key="id" :id="id">
+     <Editor v-for="editor in editors" 
+      :key="editor" 
+      :name="editor.name"
+      :code="editor.code">
      </Editor>
 
     </div>
@@ -19,6 +21,54 @@
     </div>
   </div>
 </template>
+
+
+<script>
+import TitleBar from '@/components/TitleBar.vue'
+import Console from '@/components/Console.vue'
+import Command from '@/components/Command.vue'
+import Editor from '@/components/Editor.vue'
+import Info from '@/components/Info.vue'
+
+import { ALL_SHORTCUTS } from '@/config/shortcuts'
+import _ from 'lodash'
+
+ALL_SHORTCUTS()
+
+
+
+export default {
+  name: 'Home',
+  components: {
+    TitleBar,
+    Console,
+    Command,
+    Editor,
+    Info
+  },
+  data(){
+    return {
+      editors:[]
+    }
+  },
+  methods:{
+
+  },
+  computed:{
+    getEditors(){
+      return this.$store.getters['editors/getEditors']
+    }
+  },
+  watch:{
+    getEditors(newVal, oldVal){
+      if (_.isEqual(newVal, oldVal)) return
+      this.editors = newVal
+    }
+  }
+}
+
+</script>
+
 
 
 <style scoped>
@@ -101,44 +151,4 @@
 </style>
 
 
-<script>
-import TitleBar from '@/components/TitleBar.vue'
-import Console from '@/components/Console.vue'
-import Command from '@/components/Command.vue'
-import Editor from '@/components/Editor.vue'
-import Info from '@/components/Info.vue'
 
-import { ALL_SHORTCUTS } from '@/config/shortcuts'
-ALL_SHORTCUTS()
-
-
-
-export default {
-  name: 'Home',
-  components: {
-    TitleBar,
-    Console,
-    Command,
-    Editor,
-    Info
-  },
-  data(){
-    return {
-      editorsId:[]
-    }
-  },
-  methods:{
-  },
-  computed:{
-    getEditorsName(){
-      return this.$store.getters['editors/getNames']
-    }
-  },
-  watch:{
-    getEditorsName(newVal){
-      this.editorsId = newVal
-    }
-  }
-}
-
-</script>

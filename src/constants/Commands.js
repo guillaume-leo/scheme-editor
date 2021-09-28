@@ -1,13 +1,23 @@
 import store from '@/store'
 
 export const COMMANDS = {
-    new: (listNames)=>{
-        store.commit('editors/addName', listNames)
+    new: (editorName)=>{
+        const editorsName = store.getters['editors/getEditorsName']
+        if (editorsName.includes(editorName[0])) return store.commit('console/print', `error : ${editorName} already exist`)
+        store.commit('editors/newEditor', editorName[0])
     },
-    kill: (listNames)=>{
-        store.commit('editors/kill', listNames)
+    del: (name)=>{
+        store.commit('editors/deleteEditor', {
+            name: name[0]
+        })
     },
     test: ()=>{
         console.log(store.getters['editors/getRefs'][0].doc.toString());
+    },
+    rn: (name)=>{
+        store.commit('editors/changeEditorName', {
+            name: name[0],
+            newName: name[1]
+        })
     }
 }

@@ -1,12 +1,4 @@
-
-function getAllIndexes(arr, val) {
-    var indexes = [], i;
-    for(i = 0; i < arr.length; i++)
-        if (arr[i] === val)
-            indexes.push(i);
-    return indexes;
-}
-
+import _ from 'lodash'
 
 export const editors = {
     namespaced: true,
@@ -15,36 +7,51 @@ export const editors = {
         editorId:[],
         names:[],
         focused:'',
-        sExpr:{}
+        sExpr:{},
+        editors:[]
     }),
     mutations: {
         ['sExpr'] (state, obj) {
             state.sExpr = obj.sExpr  
         },
 
-        ['addRef'] (state, obj) {
-            state.refs = [...state.refs, obj.ref]
-            state.editorId = [...state.editorId, obj.editorId]
+        ['newEditor'](state, editorName){
+            state.editors = [
+                ...state.editors,
+                {
+                    name: editorName,
+                    code: '(something)',
+                    ref: {}
+                }
+            ]
         },
 
-        ['focused'] (state, id) {
-            state.focused = id
-        },        
-
-        ['addName'](state, list){
-            list.forEach(e => {
-                if (!state.names.includes(e)) state.names = [e, ...state.names]
-            });
+        ['addRef'] (state, payload) {
+            const item = state.editors.find(item => item.name === payload.name)
+            Object.assign(item, {ref:payload.ref})
         },
 
-        ['kill'](state, nameList){
-            [...new Set(nameList)].forEach(e => {
-                let index = getAllIndexes(state.names, e)
-                state.names.splice(index, 1)
-                state.refs.splice(index, 1)
-                state.editorId.splice(index, 1)
-            });          
+        ['updateCode'] (state, payload) {
+            const item = state.editors.find(item => item.name === payload.name)
+            Object.assign(item, {code:payload.code})
+        },
+
+        ['deleteEditor'] (state, payload) {
+            const editorsArr = state.editors
+            const index =_.findIndex(editorsArr, o => { return o.name == payload.name })
+            if (index === -1) return
+            console.log(editorsArr[index])
+            editorsArr.splice(index, 1)
+            console.log(editorsArr);
+        },
+
+        ['changeEditorName'] (state, payload) {
+            const item = state.editors.find(item => item.name === payload.name)
+            if (item === undefined) return
+            Object.assign(item, {name:payload.newName})
+            console.log(state.editors);
         }
+
     },
     getters: {
         getRefs(state){
@@ -58,6 +65,12 @@ export const editors = {
         },
         getsExpr(state){
             return state.sExpr
+        },
+        getEditorsName(state){
+            return _.map(state.editors, 'name')
+        },
+        getEditors(state){
+            return state.editors
         }
     }
 }
