@@ -1,13 +1,13 @@
 <template>
 <p 
-    v-for="name in editors" 
-    :id="name"
-    :key="name"
-    :ref="name"
+    v-for="editor in editors" 
+    :id="editor.name"
+    :key="editor.name"
+    :ref="editor.name"
     
-    @mousedown="select"
+    @mousedown="select" 
 >
-        {{name}}
+        {{editor.name}}
 </p>
 </template>
 
@@ -21,8 +21,8 @@ export default {
         }
     },
     computed:{
-        getNames(){
-          return this.$store.getters['editors/getNames']
+        getEditors(){
+          return this.$store.getters['editors/getEditors']
         },
         getFocusedEditor(){
             return this.$store.getters['info/getFocusedEditor']
@@ -30,21 +30,31 @@ export default {
     },
     methods:{
         select(e){
-            e.ctrlKey ?
-            console.log(`SHOW/HIDE ${e.srcElement.innerText}`)
-            :console.log(`SELECT ${e.srcElement.innerText}`)
+            const editorId = `__${e.srcElement.innerText}__`
+            const buttonId = e.srcElement.innerText
+            let editor = document.getElementById(editorId).style
+            let button = document.getElementById(buttonId).style
+            if (e.ctrlKey) {
+                editor.display = 'block'
+                button.color = 'rgba(255, 255, 255, 0.8)'
+                return
+            }
+            button.color = 'rgba(255, 255, 255, 0.4)'
+            editor.display = 'none'
+
         }
     },
     watch:{
-        getNames(newVal){
-          this.editors = newVal
+        getEditors(newVal){
+            console.log(newVal);
+            this.editors = newVal
         },
         getFocusedEditor(newVal){
             const allP = Object.keys(this.$refs);
+            console.log(allP);
             allP.forEach(el => {
                 this.$refs[el].classList.remove('focused')
-                // el.style.border = 'none'
-            });
+            })
             this.$refs[newVal].classList.add('focused')
 
         }
@@ -62,7 +72,7 @@ p{
     margin: 2px;
     text-align: left;
     font-size: 10px;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.8);
     font-family: 'Fira Code';
     cursor: crosshair;
 }

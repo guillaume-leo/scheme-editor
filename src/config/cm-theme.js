@@ -1,17 +1,14 @@
 import {EditorView} from "@codemirror/view"
 import {HighlightStyle, tags as t} from "@codemirror/highlight"
 
-const chalky = "#e5c07b",
-  coral = "#e06c75",
+const coral = "#e06c75",
   invalid = "#ffffff",
   ivory = "#abb2bf",
   stone = "#7d8799", // Brightened compared to original to increase contrast
   darkBackground = "#21252b",
   highlightBackground = "rgba(100,100,100,0.3)",
   background = "rgba(0.0,0.0,0.0,0.0)",
-  selection = "rgba(50,50,50,0.5)"
-  // cursor = "#528bff"
-console.log(chalky);
+  selection = "rgba(200,200,200,0.5)"
 
 export const oneDarkTheme  = EditorView.theme({
     "&": {

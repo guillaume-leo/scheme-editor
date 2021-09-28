@@ -7,6 +7,8 @@
 <script>
 import { COMMANDS } from '../constants/Commands.js'
 
+
+
 export default {
     name: 'Command',
     methods:{
@@ -15,6 +17,7 @@ export default {
             const car = command[0]
             const cdr = command.slice(1)
             if (Object.keys(COMMANDS).includes(car)) {
+                console.log(Object.keys(COMMANDS).indexOf(car));
                 COMMANDS[car](cdr)
                 this.command = ''
                 return

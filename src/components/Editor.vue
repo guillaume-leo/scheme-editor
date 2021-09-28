@@ -26,7 +26,7 @@ import {snippets} from "@/config/snippets"
 const  offsetToPos = (doc, offset) => {
   let line = doc.lineAt(offset)
   return {line: line.number - 1, ch: offset - line.from}
-}
+} 
 
 export default {
     name:'Editor',
@@ -55,8 +55,8 @@ export default {
       //     })
       // })
 
-      const onChange = EditorView.updateListener.of(() => {
-        // if (obj.view.hasFocus) this.$store.commit('info/focusedEditor', this.id)
+      const onChange = EditorView.updateListener.of((obj) => {
+        if (obj.view.hasFocus) this.$store.commit('info/focusedEditor', this.name)
         const cm = this.view.state
         const currText = cm.doc.toString()
         this.$store.commit('editors/updateCode', {
@@ -86,7 +86,7 @@ export default {
       })
 
       this.$store.commit('editors/addRef', {
-        ref: this.view.state,
+        ref: this.view,
         name:this.name
       })
     },

@@ -42,14 +42,12 @@ export const editors = {
             if (index === -1) return
             console.log(editorsArr[index])
             editorsArr.splice(index, 1)
-            console.log(editorsArr);
         },
 
         ['changeEditorName'] (state, payload) {
             const item = state.editors.find(item => item.name === payload.name)
             if (item === undefined) return
             Object.assign(item, {name:payload.newName})
-            console.log(state.editors);
         }
 
     },
