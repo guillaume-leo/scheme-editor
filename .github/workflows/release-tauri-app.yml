@@ -1,6 +1,7 @@
 name: release-tauri-app
-
 on:
+  watch:
+    types: [started]
   push:
     branches:
       - main
@@ -17,14 +18,14 @@ jobs:
       - name: setup node
         uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: 12
       - name: install rust stable
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           profile: minimal
       - name: install webkit2gtk
-        run: 
+        run: |
           sudo apt-get update
           sudo apt-get install -y webkit2gtk-4.0
       - run: yarn
@@ -45,7 +46,7 @@ jobs:
       - name: setup node
         uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: 12
       - name: get version
         run: echo ::set-env name=PACKAGE_VERSION::$(node -p "require('./package.json').version")
       - name: create release
@@ -72,7 +73,7 @@ jobs:
         include:
           - platform: ubuntu-latest
             buildFolder: bundle/deb
-            ext: \_0.1.0_amd64.deb
+            ext: _0.1.0_amd64.deb
             compressed: ''
           - platform: macos-latest
             buildFolder: bundle/osx
@@ -88,7 +89,7 @@ jobs:
       - name: setup node
         uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: 12
       - name: install rust stable
         uses: actions-rs/toolchain@v1
         with:
