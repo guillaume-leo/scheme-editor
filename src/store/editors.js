@@ -3,11 +3,6 @@ import _ from 'lodash'
 export const editors = {
     namespaced: true,
     state: () => ({
-        refs: [],
-        editorId:[],
-        names:[],
-        focused:'',
-        sExpr:{},
         editors:[]
     }),
     mutations: {

@@ -43,10 +43,28 @@ export const COMMANDS = {
     },
     rn: (name)=>{
         resetChoice()
+        const editorsName = store.getters['editors/getEditorsName']
+        if (editorsName.includes(name[1])) return store.commit('console/print', `error : ${name[1]} already exist`)
         store.commit('editors/changeEditorName', {
             name: name[0],
             newName: name[1]
         })
+    },
+    save: async(fileName)=>{
+        const filePath = store.getters['file/getFilePath']
+        if (fileName[0] !== filePath) {
+            store.commit('console/print', `⚠⚠⚠ you're trying to save this content to another file,
+            if this file exist, its content will be overwritten. Do you want to proceed?(y/n)`)
+            const answer = await makeChoice()
+            if (answer === 1) {
+                // TAURI API CALL
+                store.commit('console/print', `done :)`)
+                choice = -1
+                return
+            }
+            store.commit('console/print', `command aborded :)`)
+            choice = -1
+        }
     },
     y: ()=>{
         choice = 1

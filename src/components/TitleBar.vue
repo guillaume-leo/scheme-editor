@@ -1,5 +1,10 @@
 <template>
   <div data-tauri-drag-region class="titlebar">
+
+      <div>
+          <p>{{this.filePath}}</p>
+      </div>
+
       <div class="titlebar-button" id="titlebar-opacity">
         <Icon @click="changeOpacity" width="30" :icon="icons.opacityIcon" />
       </div>
@@ -39,6 +44,8 @@ export default {
             opacityIcon                 
 		},
     opacity : 1.0,
+    filePath: '',
+    danger: false
 	}
   },
     methods: {
@@ -57,7 +64,17 @@ export default {
          const result = await confirm("Do you really want to leave?")
          if (result) appWindow.close()
       }
-  }
+  },
+  computed:{
+      getFilePath(){
+        return this.$store.getters['file/getFilePath']
+      },    
+  },
+  watch: {
+      getFilePath(newVal){
+          this.filePath = newVal
+      },
+    }
 }
 </script>
 

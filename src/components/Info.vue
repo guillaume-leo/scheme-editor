@@ -50,7 +50,8 @@ export default {
             this.editors = newVal
         },
         getFocusedEditor(newVal){
-            const allP = Object.keys(this.$refs);
+
+            const allP = this.editors.map(item =>  item["name"])
             console.log(allP);
             allP.forEach(el => {
                 this.$refs[el].classList.remove('focused')
