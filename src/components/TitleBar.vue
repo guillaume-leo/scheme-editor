@@ -107,6 +107,17 @@ export default {
   background-color: rgba(250,250,250,0.5)
 }
 
+p{
+  font-size: 10px;
+  position: absolute;
+  top: 10px;
+  padding: 0;
+  margin: 0;
+  left : 5px;
+  user-select: none;
+  pointer-events: none;
+}
+
 @keyframes blinkOn {
   from {background-color: rgba(250,250,250,0.0);}
   to {background-color: rgba(250,250,250,0.5)}

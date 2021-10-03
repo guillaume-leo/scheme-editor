@@ -8,7 +8,9 @@ export const file = {
     }),
 
     mutations: {
-
+      ['setFilePath'](state, path){
+        state.filePath = path
+      }
       },
     
     getters: {
