@@ -3,6 +3,7 @@ export const file = {
     
     state: () => ({
         filePath:'',
+        node: '',
         fileContent:'',
 
     }),
@@ -10,12 +11,19 @@ export const file = {
     mutations: {
       ['setFilePath'](state, path){
         state.filePath = path
-      }
       },
+      
+      ['setNode'](state, node){
+        state.node = node
+      }
+    },
     
     getters: {
-        getFilePath(state){
-            return state.filePath
-        } 
-      },    
+      getFilePath(state){
+          return state.filePath
+      },
+      getNode(state){
+        return state.node
+      }  
+    },    
 }

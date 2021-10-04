@@ -1,1 +1,0 @@
-[{"name":"gogol","code":"(define (salut)\n  (post 'salut))\n(define (salut)\n  (post 'salut))\n(define (salut)\n  (post 'salut))\n(define (salut)\n  (post 'salut))"}]

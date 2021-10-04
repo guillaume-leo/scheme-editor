@@ -1,40 +1,10 @@
 import store from '@/store'
 import { currentDir } from '@tauri-apps/api/path'
-import { writeFile, readDir } from '@tauri-apps/api/fs'
+import {  readDir, writeFile, readTextFile } from '@tauri-apps/api/fs'
 
 import _ from 'lodash'
-import { insertNodeIntoTree, removeNode } from '@/functions/tree'
 
-const tree = 
-{
-    "name": 'root',
-    "level": 0,
-    "children": []
-}
-
-insertNodeIntoTree(tree, 'root', {
-    name: 'Guillaume',
-    editors:['a','b','c']
-})
-
-insertNodeIntoTree(tree, 'root', {
-    name: 'Bernard Friot',
-    editors:['a','b','c']
-})
-
-insertNodeIntoTree(tree, 'Guillaume', {
-    name: 'Merlin',
-    editors:['a','b','c']
-})
-
-insertNodeIntoTree(tree, 'Guillaume', {
-    name: 'Eleonore',
-    editors:['a','b','c']
-})
-
-removeNode(tree, 'Merlin')
-
-console.log(tree);
+import { Tree } from '@/functions/tree'
 
 
 let choice = -1
@@ -55,6 +25,9 @@ const resetChoice = ()=>{
 } 
 
 export const COMMANDS = {
+    q: async()=>{
+        makeChoice()
+    },
 
     new: (editorName)=>{
         resetChoice()
@@ -80,49 +53,72 @@ export const COMMANDS = {
             newName: name[1]
         })
     },
-    save: async(fileName)=>{
-        const editorsContent = store.getters['editors/getEditors'].map((e)=>{
+    s: async(fileName)=>{
+        resetChoice()
+        /*
+        1/ file doesn't exist
+        2/ file already exist >>> cli
+        3/ file exist and we arleady are on the node
+        */
+        const editors = store.getters['editors/getEditors'].map((e)=>{
             delete e.ref
             return e
         })
+        const nodePath = fileName[0].split('/')
         const appPath = await currentDir()
-        const filePath = store.getters['file/getFilePath']
-        if (appPath+fileName[0]+'.json' !== filePath) {
-            store.commit('console/print', `⚠_Attention!_⚠ you're trying to save this to another file,
-            if this file exist, its content will be overwritten. Do you want to proceed?(y/n)`)
-            const answer = await makeChoice()
-            if (answer === 1) { // if YES
-                await writeFile({
-                    path:appPath+fileName[0]+'.json',
-                    contents: JSON.stringify(editorsContent)
-                    
-                })
-                store.commit('file/setFilePath', appPath+fileName[0]+'.json')
-                store.commit('console/print', appPath+fileName[0]+'.json')
-                choice = -1
-                return
-            }
-            // if NO
-            store.commit('console/print', `command aborded :)`)
-            choice = -1
+        const fileList = await readDir(appPath)
+        const filePath = appPath + nodePath[0] + '.json'
+        const getJsonFiles = _.pickBy(fileList, value => {
+            return _.endsWith(value.name, nodePath[0]+'.json');
+          })
+        const isExist = Object.keys(getJsonFiles).length > 0
+
+        
+        if (!isExist){ // the file doesn't exist we write a new file and save editors at the root
+            const tree = Tree.createRoot(nodePath[0], editors)
+            await writeFile({
+                path: filePath,
+                contents: JSON.stringify(tree)
+            })
+            store.commit('console/print', `file written ${filePath}`)
+            store.commit('file/setFilePath', filePath)
+            store.commit('file/setNode', nodePath[0])
+            console.log(nodePath[0]);
             return
+        } 
+        // the file exist, but the app is already attached to another file 
+        if (filePath !== store.getters['file/getFilePath']){
+            const fileContent = JSON.parse(await readTextFile(filePath))
+            const allNodesName = Tree.getAllNodesName(fileContent)
+            console.log(allNodesName);
+            store.commit('console/print', `⚠⚠⚠${filePath} already exists, this content will be written in a new node at root level, are you ok?(y/n)`)
+            const answer = await makeChoice()
+            if (answer === 1) {
+                const date = new Date().getTime()
+                Tree.insert(fileContent, fileName[0],{
+                    name: date.toString(),
+                    editors: editors
+                })
+                await writeFile({
+                    path: filePath,
+                    contents: JSON.stringify(fileContent)
+                })
+                console.log(fileContent);
+                store.commit('file/setFilePath', filePath)
+                store.commit('file/setNode', nodePath[0])
+            }
+        }else{
+            console.log(`it's the same`);
         }
-        await writeFile({
-            path:appPath+fileName[0]+'.json',
-            contents: JSON.stringify(editorsContent)
-            
-        })
-        store.commit('file/setFilePath', appPath+fileName[0]+'.json')
-        store.commit('console/print', appPath+fileName[0]+'.json')
-        choice = -1
-        return
+
+
     },
     ls: async()=>{
 
         const path = await currentDir()
         const fileList = await readDir(path)
         
-        var getJsonFiles = _.pickBy(fileList, value => {
+        const getJsonFiles = _.pickBy(fileList, value => {
             return _.endsWith(value.name, "json");
           })
         

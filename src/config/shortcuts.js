@@ -26,7 +26,6 @@ export const ALL_SHORTCUTS = ()=>{
         }
     )
 
-
     // make sure that shortcuts are still working inside INPUT/TEXT/TEXTAREA elements
     hotkeys.filter = function(event){
         var tagName = (event.target || event.srcElement).tagName;

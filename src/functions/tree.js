@@ -1,3 +1,19 @@
+export const Tree = {
+    createRoot : (name, editors = []) => createRoot(name, editors),
+    getNode : (node, name) => getNodeFromTree(node, name),
+    insert: (node, name, data) => insertNodeIntoTree(node, name, data),
+    remove: (node, name) => removeNode(node, name),
+    getAllNodesName: node => getAllNodesName(node)
+}
+
+export const createRoot = (name, editors)=>{
+    return {
+        'name': name,
+        'editors': editors,
+        'children' : []
+    }
+}
+
 export const  getNodeFromTree = (node, name) => {
     if (node.name === name) {
         return node;
@@ -68,3 +84,10 @@ export const removeNode = (node, name) => { //remove node and send childs to par
         insertNodeIntoTree(node, parent, e)
     });
 }
+
+export const getAllNodesName = node => 
+(node.children.length?[]:[[node.name]]).concat(...node.children.map(child => 
+    getAllNodesName(child).map(arr => 
+       [node.name].concat(arr)
+    )
+));

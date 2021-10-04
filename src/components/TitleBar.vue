@@ -5,6 +5,10 @@
           <p>{{this.filePath}}</p>
       </div>
 
+      <div class="node">
+          {{this.node}}
+      </div>
+
       <div class="titlebar-button" id="titlebar-opacity">
         <Icon @click="changeOpacity" width="30" :icon="icons.opacityIcon" />
       </div>
@@ -45,6 +49,7 @@ export default {
 		},
     opacity : 1.0,
     filePath: '',
+    node: '',
     danger: false
 	}
   },
@@ -68,11 +73,17 @@ export default {
   computed:{
       getFilePath(){
         return this.$store.getters['file/getFilePath']
-      },    
+      },
+      getNode(){
+        return this.$store.getters['file/getNode']
+      },              
   },
   watch: {
       getFilePath(newVal){
           this.filePath = newVal
+      },
+      getNode(newVal){
+          this.node = newVal
       },
     }
 }
@@ -108,14 +119,24 @@ export default {
 }
 
 p{
-  font-size: 10px;
   position: absolute;
-  top: 10px;
-  padding: 0;
-  margin: 0;
-  left : 5px;
+  left: 5px;
+  opacity: 0.7;
+  max-width: 60%;
+  justify-content:flex-start;
+
+  font-size: 10px;
   user-select: none;
   pointer-events: none;
+
+}
+
+.node{
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 10px;
+  margin-right: 5px;
 }
 
 @keyframes blinkOn {
