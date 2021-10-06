@@ -12,10 +12,8 @@
 </template>
 
 <script>
-import { COMMANDS } from '../constants/Commands.js'
 import _ from 'lodash'
-
-
+import { menu } from '@/config/menu'
 export default {
     name: 'Command',
     methods:{
@@ -24,6 +22,7 @@ export default {
             const answer = await new Promise((resolve) => {
                 
                 window.onkeydown = (e)=>{
+                    if (this.infoPanel[0][0] ==='double Alt') return
                     if (type === 'key') {
                         resolve(e)
                     }else{
@@ -31,7 +30,6 @@ export default {
                             resolve({key:e.key, payload: this.word})
                             }
                         if (e.key.length === 1) this.word += e.key
-                        console.log(e.key);
                         if (e.key === 'Backspace') this.word = this.word.slice(0, -1)
                     }
                     
@@ -44,27 +42,17 @@ export default {
                 return
             }
             if (cmd[nextCommand].action) {
-                cmd[nextCommand].action()
-                this.infoPanel = [['double Alt','command']]
                 this.prevWord = this.word
+                const action = cmd[nextCommand].action(this.prevWord)
+                if (typeof action === 'object') return await this.cmdSystem(action, cmd[nextCommand].type)
+                this.infoPanel = [['double Alt','command']]
                 this.word = ''
                 return
             } 
 
             return await this.cmdSystem(cmd[nextCommand].children, cmd[nextCommand].type)
         },
-        execCommand(){
-            const command = this.command.trim().split(' ')
-            const car = command[0]
-            const cdr = command.slice(1)
-            if (Object.keys(COMMANDS).includes(car)) {
-                console.log(Object.keys(COMMANDS).indexOf(car));
-                COMMANDS[car](cdr)
-                this.command = ''
-                return
-            }
-            this.$store.commit('console/print',`${car} doesn't exist! Type 'info' to get the full command's list`)
-        },
+
     },
     data() {
         return {
@@ -73,68 +61,19 @@ export default {
             keyPressed:'',
             word: '',
             prevWord:'',
-            cmd:
-            [
-                {
-                    key: 'f',
-                    label: 'file commands',
-                    children:[
-                        {
-                            key: 'n',
-                            label: 'new file',
-                            children:[]
-                        },
-                        {
-                            key: 's',
-                            label: 'save',
-                            children:[],
-                            action:()=>{console.log('saved!!!')}
-                        },
-                        {
-                            key: 'a',
-                            label: 'saveAs',
-                            children:[
-                                {
-                                    key: 'Enter',
-                                    label: 'Write name and press Enter',
-                                    children:[
-                                        {
-                                            key: 'o',
-                                            label: `overwrite ${this.prevWord}.json`,
-                                            action:()=>{ console.log('OK') }
-
-                                        }
-                                    ],
-                                    type: 'key',
-                                    action:()=>{console.log('saved!!!' + this.word)},
-                                }
-                            ],
-                            type: 'word',
-                        },
-                        {
-                            key: 'l',
-                            label: 'load',
-                            children:[]
-                        },
-                    ],
-                    type: 'key'
-                },
-                {
-                    key: 'e',
-                    label: 'editor commands',
-                    children:[]                
-                },
-                {
-                    key: 't',
-                    label: 'tree commands',
-                    children:[]                
-                },
-                {
-                    key: 'o',
-                    label: 'options',
-                    children:[]                
-                }
-            ]
+            cmd:menu
+            
+        }
+    },
+    computed:{
+        cleanWord(){
+            return this.infoPanel
+        }
+    },
+    watch:{
+        cleanWord(newVal){
+            console.log(newVal === [['double Alt','command']]);
+            if (newVal === [['double Alt','command']]) this.word = ''
         }
     },
     mounted(){
@@ -144,7 +83,7 @@ export default {
         let isDoublePress;
 
         const handleDoublePresss = (key) => {
-            if (key.key === 'Alt') this.cmdSystem(this.cmd, 'key')
+            if (key.key === 'Alt') this.cmdSystem(this.cmd(), 'key')
         }
 
         const timeOut = () => setTimeout(() => isDoublePress = false, 250);

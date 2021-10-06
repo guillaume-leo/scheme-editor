@@ -89,9 +89,8 @@ export default {
         ref: this.view,
         name:this.name
       })
-      document.addEventListener('keyup', (e)=>{
-        if (e.key === ' ' && e.altKey) this.view.contentDOM.blur()
-     });
+
+
 
       
     },
