@@ -2,17 +2,7 @@ import store from '@/store'
 import { writeFile, readTextFile } from '@tauri-apps/api/fs'
 import { save, open } from '@tauri-apps/api/dialog'
 
-export const menuActions = {
-    saveAction:         saveAction,
-    saveAsAction:       saveAsAction,
-    addEditorAction:    addEditorAction,
-    deleteEditorAction: deleteEditorAction,
-    renameEditorAction: renameEditorAction,
-    copyEditorAction:   copyEditorAction,
-    pasteEditorAction:  pasteEditorAction,
-    newFileAction:      newFileAction,
-    loadFileAction:     loadFileAction
-}
+
 
 /*
 *   ------------
@@ -58,6 +48,7 @@ const saveAsAction = ()=>{
         }]  
     })
     .then((e)=>{
+        if (e===null) return
         writeFile({
             path: e,
             contents: JSON.stringify(editors)
@@ -134,3 +125,14 @@ const pasteEditorAction = ()=>{
     store.commit('editors/pasteEditors')
 }
 
+export const menuActions = {
+    saveAction:         saveAction,
+    saveAsAction:       saveAsAction,
+    addEditorAction:    addEditorAction,
+    deleteEditorAction: deleteEditorAction,
+    renameEditorAction: renameEditorAction,
+    copyEditorAction:   copyEditorAction,
+    pasteEditorAction:  pasteEditorAction,
+    newFileAction:      newFileAction,
+    loadFileAction:     loadFileAction
+}
