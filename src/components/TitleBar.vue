@@ -66,8 +66,8 @@ export default {
         appWindow.toggleMaximize()
       },
       async close(){ 
-         const result = await confirm("Do you really want to leave?")
-         if (result) appWindow.close()
+        const result = await confirm("Do you really want to leave?")
+        if (result) appWindow.close()
       }
   },
   computed:{
@@ -122,7 +122,7 @@ p{
   position: absolute;
   left: 5px;
   opacity: 0.7;
-  max-width: 60%;
+  max-width: 80%;
   justify-content:flex-start;
 
   font-size: 10px;

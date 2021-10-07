@@ -10,7 +10,7 @@ import { Tree } from '@/functions/tree'
 let choice = -1
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-  
+
 const makeChoice = async()=>{
     choice = 0
     while (choice === 0) {
@@ -70,7 +70,7 @@ export const COMMANDS = {
         const filePath = appPath + nodePath[0] + '.json'
         const getJsonFiles = _.pickBy(fileList, value => {
             return _.endsWith(value.name, nodePath[0]+'.json');
-          })
+        })
         const isExist = Object.keys(getJsonFiles).length > 0
 
         

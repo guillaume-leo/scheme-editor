@@ -62,6 +62,11 @@
         "removeDir": true,
         "removeFile": true,
         "renameFile": true
+      },
+      "dialog": {
+        "all": true, 
+        "open": true,
+        "save": true 
       }
     },
     "windows": [

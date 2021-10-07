@@ -12,6 +12,10 @@ export const file = {
       ['setFilePath'](state, path){
         state.filePath = path
       },
+
+      ['eraseFilePath'](state){
+        state.filePath=''
+      },
       
       ['setNode'](state, node){
         state.node = node

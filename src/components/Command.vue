@@ -18,7 +18,7 @@ export default {
     name: 'Command',
     methods:{
         async cmdSystem(cmd, type){
-            this.infoPanel = cmd.map(e=>[e.key,e.label])
+            this.infoPanel = await cmd.map(e=>[e.key,e.label])
             const answer = await new Promise((resolve) => {
                 
                 window.onkeydown = (e)=>{
@@ -38,6 +38,9 @@ export default {
             const nextCommand = _.findIndex(cmd, (e)=>e.key===answer.key)
 
             if (nextCommand === -1) {
+                setTimeout(() => {
+                    this.storedRef.contentDOM?.focus()
+                }, 150);
                 this.infoPanel = [['⚠error⚠', 'wrong command']]
                 return
             }
@@ -47,6 +50,9 @@ export default {
                 if (typeof action === 'object') return await this.cmdSystem(action, cmd[nextCommand].type)
                 this.infoPanel = [['double Alt','command']]
                 this.word = ''
+                setTimeout(() => {
+                    this.storedRef.contentDOM?.focus()
+                }, 150);
                 return
             } 
 
@@ -61,19 +67,22 @@ export default {
             keyPressed:'',
             word: '',
             prevWord:'',
-            cmd:menu
+            cmd:menu,
+            focusedEditor:'',
+            storedRef:{},
             
         }
     },
     computed:{
-        cleanWord(){
-            return this.infoPanel
+        getFocusedEditor(){
+            const name = this.$store.getters['info/getFocusedEditor'] 
+            const editors = this.$store.getters['editors/getEditors']
+            return editors.find(e=>e.name===name)?.ref
         }
     },
     watch:{
-        cleanWord(newVal){
-            console.log(newVal === [['double Alt','command']]);
-            if (newVal === [['double Alt','command']]) this.word = ''
+        getFocusedEditor(newVal){
+            this.focusedEditor = newVal        
         }
     },
     mounted(){
@@ -82,8 +91,15 @@ export default {
         let lastPressed;
         let isDoublePress;
 
-        const handleDoublePresss = (key) => {
-            if (key.key === 'Alt') this.cmdSystem(this.cmd(), 'key')
+        const handleDoublePressAlt = (key) => {
+
+            if (key.key === 'Alt') {
+                this.cmdSystem(this.cmd(), 'key')
+                if (this.focusedEditor) this.storedRef = this.focusedEditor
+                this.storedRef.contentDOM?.blur()
+                
+
+            }
         }
 
         const timeOut = () => setTimeout(() => isDoublePress = false, 250);
@@ -93,7 +109,7 @@ export default {
 
             if (isDoublePress && pressed === lastPressed) {
                 isDoublePress = false;
-                handleDoublePresss(key);
+                handleDoublePressAlt(key);
             } else {
                 isDoublePress = true;
                 timeOut();

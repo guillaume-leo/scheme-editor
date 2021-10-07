@@ -1,27 +1,4 @@
-import store from '@/store'
-
-const saveAs = (name)=>{
-    store.commit('console/print', `${name}.json have been written`)
-}
-
-const addEditor = (editorName)=>{
-    const editorsName = store.getters['editors/getEditorsName']
-    if (editorsName.includes(editorName)) return store.commit('console/print', `error : ${editorName} already exist`)
-    store.commit('editors/newEditor', editorName)
-}
-
-const loadConfirm =[
-        {
-            key: 'l',
-            label: `don't save actual session`,
-            children:[]
-        },
-        {
-            key: 's',
-            label: `save before load`,
-            children:[]
-        },
-    ]
+import { menuActions } from '@/functions/menuActions'
 
 
 const file = [
@@ -29,33 +6,27 @@ const file = [
         key: 'n',
         label: 'new file',
         children:[],
-        action:()=>{console.log('new file created')}
+        action:()=>menuActions.newFileAction()
     },
     {
         key: 's',
         label: 'save',
         children:[],
-        action:()=>{console.log('saved!!!')}
+        action:()=>menuActions.saveAction(),
+        type:'key'
     },
     {
         key: 'a',
         label: 'saveAs',
-        children:[
-            {
-                key: 'Enter',
-                label: 'Write name and press Enter',
-                children:[],
-                type: 'key',
-                action:word=>saveAs(word),
-            }
-        ],
-        type: 'word',
+        children:[],
+        type: 'key',
+        action:()=>menuActions.saveAsAction()
     },
     {
         key: 'l',
         label: 'load',
         children:[],
-        action:()=>loadConfirm,
+        action:()=>menuActions.loadFileAction(),
         type:'key'
     },
 ]
@@ -69,10 +40,59 @@ const editors = [
                 label: 'Write name and press Enter',
                 children:[],
                 type: 'key',
-                action: name=>addEditor(name)
+                action: name=>menuActions.addEditorAction(name)
             }
         ],
         type:'word',
+    },
+    {
+        key: 'd',
+        label: 'delete editor',
+        children:[
+            {
+                key: 'Enter',
+                label: 'Write name and press Enter',
+                children:[],
+                type: 'key',
+                action: name=>menuActions.deleteEditorAction(name)
+            }
+        ],
+        type: 'word',
+    },
+    {
+        key: 'r',
+        label: 'rename editor',
+        children:[
+            {
+                key: 'Enter',
+                label: 'Write name and press Enter',
+                children:[],
+                type: 'key',
+                action: name=>menuActions.renameEditorAction(name)
+            }
+        ],
+        type: 'word',
+    },
+    {
+        key: 'c',
+        label: 'copy editor',
+        children:[
+            {
+                key: 'Enter',
+                label: 'Write name(s) and press Enter',
+                children:[],
+                type: 'key',
+                action: name=>menuActions.copyEditorAction(name)
+            }
+        ],
+        type: 'word',
+    },
+    {
+        key: 'p',
+        label: 'paste',
+        children:[],
+        action:()=>menuActions.pasteEditorAction(),
+        type:'key'
     }
 ]
 
