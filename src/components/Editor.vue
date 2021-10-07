@@ -89,6 +89,10 @@ export default {
         ref: this.view,
         name:this.name
       })
+
+
+
+      
     },
     methods:{
       parinfer(key){
