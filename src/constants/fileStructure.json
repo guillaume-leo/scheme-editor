@@ -1,0 +1,19 @@
+[
+    {
+        "name": "rootLevel, same name as the file",
+        "data" : "here should be the content of state.editors",
+        "child0" : {
+            "name": "ambientVersion",
+            "data" : "here should be the content of state.editors",
+            "child0":{"...":"..."},
+            "child1":{"...":"..."}
+        },
+        "child1" : {
+            "name": "noiseVersion",
+            "data" : "here should be the content of state.editors",
+            "child0":{"...":"..."},
+            "child1":{"...":"..."}
+        }    
+    },
+    {} // here just the structure of the tree, without data (more easy to manage for D3)
+]

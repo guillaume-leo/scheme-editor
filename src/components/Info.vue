@@ -22,7 +22,7 @@ export default {
     },
     computed:{
         getEditors(){
-          return this.$store.getters['editors/getEditors']
+            return this.$store.getters['editors/getEditors']
         },
         getFocusedEditor(){
             return this.$store.getters['info/getFocusedEditor']
@@ -46,19 +46,17 @@ export default {
     },
     watch:{
         getEditors(newVal){
-            console.log(newVal);
             this.editors = newVal
         },
         getFocusedEditor(newVal){
-            const allP = Object.keys(this.$refs);
-            console.log(allP);
+
+            const allP = this.editors.map(item =>  item["name"])
             allP.forEach(el => {
                 this.$refs[el].classList.remove('focused')
             })
             this.$refs[newVal].classList.add('focused')
 
         }
-       
     }
 }
 </script>

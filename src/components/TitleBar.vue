@@ -1,5 +1,14 @@
 <template>
   <div data-tauri-drag-region class="titlebar">
+
+      <div>
+          <p>{{this.filePath}}</p>
+      </div>
+
+      <div class="node">
+          {{this.node}}
+      </div>
+
       <div class="titlebar-button" id="titlebar-opacity">
         <Icon @click="changeOpacity" width="30" :icon="icons.opacityIcon" />
       </div>
@@ -39,6 +48,9 @@ export default {
             opacityIcon                 
 		},
     opacity : 1.0,
+    filePath: '',
+    node: '',
+    danger: false
 	}
   },
     methods: {
@@ -54,10 +66,26 @@ export default {
         appWindow.toggleMaximize()
       },
       async close(){ 
-         const result = await confirm("Do you really want to leave?")
-         if (result) appWindow.close()
+        const result = await confirm("Do you really want to leave?")
+        if (result) appWindow.close()
       }
-  }
+  },
+  computed:{
+      getFilePath(){
+        return this.$store.getters['file/getFilePath']
+      },
+      getNode(){
+        return this.$store.getters['file/getNode']
+      },              
+  },
+  watch: {
+      getFilePath(newVal){
+          this.filePath = newVal
+      },
+      getNode(newVal){
+          this.node = newVal
+      },
+    }
 }
 </script>
 
@@ -88,6 +116,27 @@ export default {
   animation: blinkOn 0.25s ;
   /* animation-iteration-count: infinite; */
   background-color: rgba(250,250,250,0.5)
+}
+
+p{
+  position: absolute;
+  left: 5px;
+  opacity: 0.7;
+  max-width: 80%;
+  justify-content:flex-start;
+
+  font-size: 10px;
+  user-select: none;
+  pointer-events: none;
+
+}
+
+.node{
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 10px;
+  margin-right: 5px;
 }
 
 @keyframes blinkOn {

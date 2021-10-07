@@ -1,6 +1,7 @@
 <template>
 
   <div class="container">
+    <input type="text" style="display:none" id="elementt">
     <TitleBar/>
     <div class="a">
      <Editor v-for="editor in editors" 
