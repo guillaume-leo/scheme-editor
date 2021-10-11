@@ -1,8 +1,14 @@
 <template>
   <div data-tauri-drag-region class="titlebar">
-
+      <div v-if="!hasChanged">
+        <p id='dot'>●</p>
+      </div>
       <div>
-          <p>{{this.filePath}}</p>
+          <p id="path">{{this.filePath}}</p>
+      </div>
+
+      <div class="node">
+          {{this.node}}
       </div>
 
       <div class="titlebar-button" id="titlebar-opacity">
@@ -29,6 +35,8 @@ import bxWindowClose from '@iconify-icons/bx/bx-window-close'
 import windowMinimize from '@iconify-icons/la/window-minimize'
 import opacityIcon from '@iconify-icons/carbon/opacity';
 
+import _ from 'lodash'
+
 
 export default {
   components: {
@@ -45,7 +53,10 @@ export default {
 		},
     opacity : 1.0,
     filePath: '',
-    danger: false
+    node: '',
+    hasChanged: false,
+    fileContent: {},
+    editors:[]
 	}
   },
     methods: {
@@ -61,18 +72,61 @@ export default {
         appWindow.toggleMaximize()
       },
       async close(){ 
-         const result = await confirm("Do you really want to leave?")
-         if (result) appWindow.close()
+        const result = await confirm("Do you really want to leave?")
+        if (result) appWindow.close()
       }
   },
   computed:{
       getFilePath(){
         return this.$store.getters['file/getFilePath']
-      },    
+      },
+      getFileHasChanged(){
+        return this.$store.getters['file/getFileHasChanged']
+      },
+      getFileContent(){
+        return this.$store.getters['file/getFileContent']
+      },
+      getEditors(){
+        return this.$store.getters['editors/getEditors']
+      },
+      getNode(){
+        return this.$store.getters['file/getNode']
+      },              
   },
   watch: {
+      getFileHasChanged(newVal){
+        console.log(newVal);
+        this.hasChanged = newVal
+      },
+      getFileContent(newVal){
+        console.log('FILE CONTENT CHANGED')
+        this.fileContent = newVal             
+      },
+      getEditors:{
+        handler(newVal){
+          console.log('EDITORS HAS CHANGED');
+          const editors = []
+          newVal.forEach(e => {
+            editors.push({
+              name:e.name,
+              code:e.code
+            })
+          });
+          console.log('FILECONTENT',this.fileContent);
+          console.log('EDITORS',editors);
+          const areEquals = _.isEqual(editors, this.fileContent)
+          console.log('ARE EQUALS: ' + areEquals);
+          // console.log('ARE EQUALS', hasChanged);
+          this.$store.commit('file/hasChanged',areEquals)
+        },
+        deep:true
+      },
+
       getFilePath(newVal){
           this.filePath = newVal
+      },
+      getNode(newVal){
+          this.node = newVal
       },
     }
 }
@@ -107,6 +161,43 @@ export default {
   background-color: rgba(250,250,250,0.5)
 }
 
+#path{
+  position: absolute;
+  left: 15px;
+  opacity: 0.7;
+  max-width: 80%;
+  justify-content:flex-start;
+
+  font-size: 10px;
+  user-select: none;
+  pointer-events: none;
+
+}
+
+.node{
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 10px;
+  margin-right: 5px;
+}
+
+#dot{
+  position: absolute;
+  left: 5px;
+  top: 0px;
+  opacity: 0.7;
+  max-width: 80%;
+  justify-content:flex-start;
+
+  font-size: 10px;
+  user-select: none;
+  pointer-events: none;
+  animation-name: blink;
+  animation-duration: 0.5s;
+  animation-iteration-count: infinite;
+}
+
 @keyframes blinkOn {
   from {background-color: rgba(250,250,250,0.0);}
   to {background-color: rgba(250,250,250,0.5)}
@@ -114,5 +205,11 @@ export default {
 @keyframes blinkOff {
   from {background-color: rgba(250,250,250,0.5)}
   to {background-color: rgba(250,250,250,0.0);}
+}
+
+@keyframes blink {
+  0%  {opacity: 0.0;}
+  50% {opacity: 1.0;}
+  100% {opacity: 0.0;}
 }
 </style>
