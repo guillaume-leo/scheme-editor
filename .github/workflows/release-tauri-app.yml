@@ -1,10 +1,9 @@
-name: release-tauri-app
+name: build-tauri-app
+
 on:
   push:
     branches:
       - main
-    paths:
-      - '**/package.json'
 
 jobs:
   check-build:
@@ -27,17 +26,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y webkit2gtk-4.0
       - run: yarn
-      - name: build nota for tauri app
-        run: yarn build
-      - run: cargo install tauri-bundler --force
+      - name: install tauri bundler
+        run: cargo install tauri-bundler --force
       - name: build tauri app
-        run: yarn tauri:build
+        run: yarn tauri build
 
   create-release:
     needs: check-build
     runs-on: ubuntu-latest
-    outputs:
-      RELEASE_UPLOAD_URL: ${{ steps.create_tauri_release.outputs.upload_url }}
 
     steps:
       - uses: actions/checkout@v2
@@ -54,10 +50,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ matrix.package.name }}-v${{ env.PACKAGE_VERSION }}
-          release_name: 'Release nota app v${{ env.PACKAGE_VERSION }}'
-          body: 'See the assets to download this version and install.'
+          release_name: "Release emoji-picker app v${{ env.PACKAGE_VERSION }}"
+          body: "See the assets to download this version and install."
           draft: true
           prerelease: false
+      - run: echo "${{ steps.create_tauri_release.outputs.upload_url }}" > release-url.txt
+      - uses: actions/upload-artifact@v1
+        with:
+          name: release-url
+          path: ./release-url.txt
 
   create-and-upload-assets:
     needs: create-release
@@ -78,12 +79,19 @@ jobs:
             ext: .app
             compressed: .tgz
           - platform: windows-latest
-            buildFolder: ''
-            ext: .x64.msi
+            buildFolder: bundle/msi
+            ext: _0.1.0_x64.msi
             compressed: ''
 
     steps:
       - uses: actions/checkout@v2
+      - name: download file with upload url
+        uses: actions/download-artifact@v1
+        with:
+          name: release-url
+      - name: pull upload url
+        shell: bash
+        run: echo ::set-env name=RELEASE_UPLOAD_URL::$(cat ./release-url/release-url.txt)
       - name: setup node
         uses: actions/setup-node@v1
         with:
@@ -99,38 +107,33 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y webkit2gtk-4.0
       - run: yarn
-      - name: build nota for tauri app
-        run: yarn build
-      - run: cargo install tauri-bundler --force
+      - name: install tauri bundler
+        run: cargo install tauri-bundler --force
       - name: build tauri app
-        run: yarn tauri:build
+        run: yarn tauri build
       - name: compress (macos only)
         if: matrix.platform == 'macos-latest'
         working-directory: ${{ format('./src-tauri/target/release/{0}', matrix.buildFolder ) }}
-        run: tar -czf ${{ format('nota{0}{1}', matrix.ext, matrix.compressed ) }} ${{ format('nota{0}', matrix.ext ) }}
+        run: tar -czf ${{ format('emoji-picker{0}{1}', matrix.ext, matrix.compressed ) }} ${{ format('emoji-picker{0}', matrix.ext ) }}
       - name: upload release asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.create-release.outputs.RELEASE_UPLOAD_URL }}
-          asset_path: ${{ format('./src-tauri/target/release/{0}/nota{1}{2}', matrix.buildFolder, matrix.ext, matrix.compressed ) }}
-          asset_name: ${{ format('nota{0}{1}', matrix.ext, matrix.compressed ) }}
+          upload_url: ${{ env.RELEASE_UPLOAD_URL }}
+          asset_path: ${{ format('./src-tauri/target/release/{0}/emoji-picker{1}{2}', matrix.buildFolder, matrix.ext, matrix.compressed ) }}
+          asset_name: ${{ format('emoji-picker{0}{1}', matrix.ext, matrix.compressed ) }}
           asset_content_type: application/zip
       - name: build tauri app in debug mode
-        run: yarn tauri:build --debug
-      - name: compress (macos only)
-        if: matrix.platform == 'macos-latest'
-        working-directory: ${{ format('./src-tauri/target/debug/{0}', matrix.buildFolder ) }}
-        run: tar -czf ${{ format('nota{0}{1}', matrix.ext, matrix.compressed ) }} ${{ format('nota{0}', matrix.ext ) }}
+        run: yarn tauri build --debug
       - name: upload release asset with debug mode on
         id: upload-release-asset-debug-mode
         uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.create-release.outputs.RELEASE_UPLOAD_URL }}
-          asset_path: ${{ format('./src-tauri/target/debug/{0}/nota{1}{2}', matrix.buildFolder, matrix.ext, matrix.compressed ) }}
-          asset_name: ${{ format('nota-debug{0}{1}', matrix.ext, matrix.compressed ) }}
+          upload_url: ${{ env.RELEASE_UPLOAD_URL }}
+          asset_path: ${{ format('./src-tauri/target/debug/{0}/emoji-picker{1}{2}', matrix.buildFolder, matrix.ext, matrix.compressed ) }}
+          asset_name: ${{ format('emoji-picker-debug{0}{1}', matrix.ext, matrix.compressed ) }}
           asset_content_type: application/zip
