@@ -28,7 +28,7 @@
 
 <script>
 import { appWindow } from '@tauri-apps/api/window'
-//icons
+
 import { Icon } from '@iconify/vue'
 import windowMaximize from '@iconify-icons/uim/window-maximize'
 import bxWindowClose from '@iconify-icons/bx/bx-window-close'
