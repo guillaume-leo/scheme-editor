@@ -1,12 +1,53 @@
 import { menuActions } from '@/functions/menuActions'
+import store from '@/store'
 
+const loadConfirm = [
+    {
+        key: 'l',
+        label: 'force load',
+        children:[],
+        action: ()=>menuActions.loadFileAction(),
+        type:'key'
+    },
+    {
+        key: 'a',
+        label: 'abort load',
+        children:[],
+        action: ()=>store.commit('console/print', 'command aborted'),
+        type:'key'
+    }
+]
+
+const newFileConfirm = [
+    {
+        key: 'n',
+        label: 'force newFile',
+        children:[],
+        action: ()=>menuActions.newFileAction(),
+        type:'key'
+    },
+    {
+        key: 'a',
+        label: 'abort new file',
+        children:[],
+        action: ()=>store.commit('console/print', 'command aborted'),
+        type:'key'
+    }
+]
 
 const file = [
     {
         key: 'n',
         label: 'new file',
         children:[],
-        action:()=>menuActions.newFileAction()
+        action:()=>{
+            const fileIsSafe = store.getters['file/getFileHasChanged']
+            if (!fileIsSafe) {
+                store.commit('console/print', 'File not saved, do you want to proceed?')
+                return newFileConfirm
+            }
+            menuActions.newFileAction()},
+        type:'key'
     },
     {
         key: 's',
@@ -26,7 +67,13 @@ const file = [
         key: 'l',
         label: 'load',
         children:[],
-        action:()=>menuActions.loadFileAction(),
+        action:()=>{
+            const fileIsSafe = store.getters['file/getFileHasChanged']
+            if (!fileIsSafe) {
+                store.commit('console/print', 'File not saved, do you want to proceed?')
+                return loadConfirm
+            }
+            menuActions.loadFileAction()},
         type:'key'
     },
 ]

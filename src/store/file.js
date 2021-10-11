@@ -4,13 +4,15 @@ export const file = {
     state: () => ({
         filePath:'',
         node: '',
-        fileContent:'',
-
+        fileContent:[],
+        hasChanged:null
     }),
 
     mutations: {
-      ['setFilePath'](state, path){
-        state.filePath = path
+      ['setFilePath'](state, payload){
+        state.filePath = payload.filePath
+        state.fileContent = payload.fileContent
+        console.log('FILE CONTENT FROM VUEX MUTATION ',payload.fileContent);
       },
 
       ['eraseFilePath'](state){
@@ -19,15 +21,26 @@ export const file = {
       
       ['setNode'](state, node){
         state.node = node
+      },
+
+      ['hasChanged'](state, val){
+        state.hasChanged = val
       }
+
     },
     
     getters: {
       getFilePath(state){
-          return state.filePath
+        return state.filePath
+      },
+      getFileContent(state){
+        return state.fileContent
       },
       getNode(state){
         return state.node
+      },
+      getFileHasChanged(state){
+        return state.hasChanged
       }  
     },    
 }

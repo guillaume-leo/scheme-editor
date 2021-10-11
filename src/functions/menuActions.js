@@ -17,9 +17,13 @@ const newFileAction = ()=>{
 }
 
 const saveAction = ()=>{
-    const editors = store.getters['editors/getEditors'].map((e)=>{ // to be replace by TREE
-        delete e.ref
-        return e
+
+    const editors = []
+    store.getters['editors/getEditors'].forEach(e => {
+        editors.push({
+            name:e.name,
+            code:e.code
+        })    
     })
     const path = store.getters['file/getFilePath'] 
     if (path.length > 0){
@@ -28,6 +32,11 @@ const saveAction = ()=>{
             path: path,
             contents: JSON.stringify(editors)
         }).then(()=>{
+            store.commit('file/setFilePath', {
+                filePath: path,
+                fileContent: editors
+            })
+            store.commit('file/hasChanged',true)
             return store.commit('console/print', `${path}`)
         })
     }else{
@@ -37,9 +46,12 @@ const saveAction = ()=>{
 }
 
 const saveAsAction = ()=>{
-    const editors = store.getters['editors/getEditors'].map((e)=>{ // to be replace by TREE
-        delete e.ref
-        return e
+    const editors = []
+    store.getters['editors/getEditors'].forEach(e => {
+        editors.push({
+            name:e.name,
+            code:e.code
+        })     
     })
     save({
         filters: [{
@@ -53,7 +65,10 @@ const saveAsAction = ()=>{
             path: e,
             contents: JSON.stringify(editors)
         }).then(()=>{
-            store.commit('file/setFilePath', e)
+            store.commit('file/setFilePath', {
+                filePath: e,
+                fileContent: editors
+            })
             return store.commit('console/print', `${e} have been written`)
         })  
     })
@@ -63,7 +78,7 @@ const saveAsAction = ()=>{
 }
 
 const loadFileAction = ()=>{
-    // check if editors change, if yes confirm()
+
     store.commit('editors/eraseEditors')
     open({
         filters: [{
@@ -77,12 +92,16 @@ const loadFileAction = ()=>{
         .then((text)=>{
             const content = JSON.parse(text)
             content.map((el)=>{
+                console.log(content);
                 store.commit('editors/newEditor', {
                     name:el.name, 
                     code:el.code
                 })
             })
-            store.commit('file/setFilePath', e)
+            store.commit('file/setFilePath', {
+                filePath: e,
+                fileContent: content
+            })
         })
     })
 }
