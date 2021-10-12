@@ -26,6 +26,7 @@
     "lodash": "^4.17.21",
     "parinfer": "^3.12.0",
     "parinfer-codemirror": "^1.4.2",
+    "tauri-plugin-websocket-api": "github:tauri-apps/tauri-plugin-websocket",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0",
     "vuex": "^4.0.0-0"

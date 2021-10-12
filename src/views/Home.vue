@@ -9,7 +9,7 @@
       :name="editor.name"
       :code="editor.code">
      </Editor>
-
+    <button @click="testt"></button>
     </div>
     <div class="b">
       <Info/>
@@ -33,6 +33,10 @@ import Info from '@/components/Info.vue'
 
 import { ALL_SHORTCUTS } from '@/config/shortcuts'
 import _ from 'lodash'
+import { test, send } from '@/config/osc'
+
+
+test()
 
 ALL_SHORTCUTS()
 
@@ -53,7 +57,9 @@ export default {
     }
   },
   methods:{
-
+    testt(){
+      send('baba')
+    }
   },
   computed:{
     getEditors(){
