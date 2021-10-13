@@ -1,21 +1,21 @@
 import WebSocket from 'tauri-plugin-websocket-api'
-
+import store from '@/store'
 let ws
 
-export const test = async () => {
+export const WSconnect = async () => {
     ws = await WebSocket.connect('ws://localhost:9001').then(r => {
-        console.log('connected');
-        _updateResponse('Connected')
+        _updateResponse('WebSocket connected on port 9001')
         return r
     }).catch(_updateResponse)
     ws.addListener(_updateResponse)
 }
 
 export function _updateResponse(returnValue) {
-    console.log(returnValue);
+    let output = typeof returnValue === 'object' ? returnValue.data : returnValue
+    store.commit('console/print',output);
 }
 
-export function send(text) {
+export function WSsend(text) {
     ws.send(text).then(() => _updateResponse(text)).catch(_updateResponse)
 }
 

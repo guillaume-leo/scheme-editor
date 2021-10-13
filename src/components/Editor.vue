@@ -7,26 +7,22 @@
 <script>
 
 
-import * as parinfer from 'parinfer'
 // import _ from 'lodash'
 
 //CODEMIRROR 6
-import {StreamLanguage} from "@codemirror/stream-parser"
 import {EditorState, EditorView, basicSetup} from "@codemirror/basic-setup"
-import { scheme } from "@codemirror/legacy-modes/mode/scheme"
+import { schemeLang } from '@/config/editors'
 import { oneDark } from '@/config/cm-theme'
 import {snippets} from "@/config/snippets"
+import {keymap} from "@codemirror/view"
 
+import { WSsend } from '@/config/osc'
 // import _ from 'lodash'
 
 // import { parseBuffer } from '@/config/parseBuffer'
 // import { parseBufferSnippets } from '@/config/parseBufferSnippets'
 
 
-const  offsetToPos = (doc, offset) => {
-  let line = doc.lineAt(offset)
-  return {line: line.number - 1, ch: offset - line.from}
-} 
 
 export default {
     name:'Editor',
@@ -39,6 +35,7 @@ export default {
             editorId: `__${this.name}__`,
             prevOffset: 0,
             codeFromVuex:''
+
         }
     },
     mounted(){
@@ -64,20 +61,59 @@ export default {
           code: currText
         })
       })
-      const schemeLang = StreamLanguage.define(scheme) 
+
+/*
+          start === 0 ? 0 : start --
+          let end = /\n\(/.exec(afterCursor)
+          end === null ? 
+            end = currText.length 
+            : end = end.index + beforeCursor.length
+          const sExp = start < currOffset && currOffset + 1 < end ? 
+            currText.slice(start,end) 
+            : ''
+          console.log(sExp, start, currOffset, end);
+*/
+
+
+      const sendCode = keymap.of([{
+        key: "Mod-e",
+        preventDefault: true,
+        run: ()=>{
+          const cm = this.view.state
+          let currOffset = cm.selection.main.head
+          if (currOffset === 0) return 
+          const currText = cm.doc.toString()
+          if (currText[currOffset - 1] === '(') currOffset ++  
+          const beforeCursor = currText.slice(0,currOffset)
+          const afterCursor = currText.slice(currOffset)
+          let end = afterCursor.search(/^\([a-zA-Z]/gm)
+          if (end === -1) end = currText.length
+          end += beforeCursor.length
+          end = currText.slice(0,end).lastIndexOf(currText.slice(0,end).match(/\)/gm).pop()) + 1
+          let start = currOffset > 0 ?
+          beforeCursor.lastIndexOf(beforeCursor.match(/^\([a-zA-Z]/gm).pop())
+          :0
+          const cursorPosIsValid = start < currOffset && currOffset < end
+          const sExp = currText.slice(start, end)
+          const sExpIsValid = sExp.match(/\)/gm).length === sExp.match(/\(/gm).length   
+          if (cursorPosIsValid && sExpIsValid) WSsend(sExp)
+
+        }
+      }])
+    
       const initialState = EditorState.create({
         doc: this.code,
         extensions: [
           basicSetup,
           schemeLang,
+          sendCode,
           onChange,
           schemeLang.data.of({
           autocomplete: snippets
           }),
           oneDark,
-          ],
-        
-      });
+          ]
+      })
 
 
       this.view = new EditorView({
@@ -95,45 +131,9 @@ export default {
       
     },
     methods:{
-      parinfer(key){
-        const cm = this.view.state
-        const tooltip = cm.values[4].open ? true : false
-        const snippet = Object.keys({...cm.values[6]}).includes('ranges')
-
-        if (tooltip || snippet) return
-        if (key.ctrlKey || key.shiftKey || key.key === 'Shift'|| key.key === 'Control') return
-
-        const currOffset = cm.selection.main.head
-        const currText = cm.doc.toString()
-        this.prevOffset = this.prevOffset > cm.doc.length ? cm.doc.length : this.prevOffset
-            const options = {
-              cursorLine:offsetToPos(cm.doc, currOffset).line,
-              cursorX: offsetToPos(cm.doc, currOffset).ch,
-              prevCursorLine:offsetToPos(cm.doc, this.prevOffset).line,
-              prevCursorX:offsetToPos(cm.doc, this.prevOffset).ch,
-            }
-
-            const result = parinfer.indentMode(currText,options)
-            const {cursorLine, cursorX} = result
-            const parinferText = result.text.split('\n')
-            let parinferCursor = 0
-            for (let i = 0; i < cursorLine;  i++){
-              const lineLength = parinferText[i].length === 0 ? 1 : parinferText[i].length + 1
-              parinferCursor += lineLength
-            }
-            parinferCursor += cursorX
-            this.prevOffset = parinferCursor
-            this.view.dispatch({
-              changes: {
-                from: 0, 
-                to: cm.doc.length, 
-                insert: result.text
-              },
-              selection: {
-                anchor: parinferCursor
-              }
-            })
-      },
+      parinfer(){
+      // parinferLayer(key, this.view.state, this.view)
+      }
     },
     computed:{
       getEditors(){

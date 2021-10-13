@@ -6,9 +6,13 @@ export const editors = {
     state: () => ({
         editors:[],
         storedEditors:[],
+        prevOffset:0,
         copy:[]
     }),
     mutations: {
+        ['changePrevOffset'](state,val){
+            state.prevOffset = val
+        },
         ['sExpr'] (state, obj) {
             state.sExpr = obj.sExpr  
         },
@@ -94,6 +98,9 @@ export const editors = {
 
     },
     getters: {
+        getPrevOffset(state){
+            return state.prevOffset
+        },
         getRefs(state){
             return state.refs
         },

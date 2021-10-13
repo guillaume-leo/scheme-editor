@@ -5,7 +5,7 @@ export const snippets =
 [
 snip(
 `(define (#{name})
-  (post #{name}))#{}`,   
+  (post '#{name}))#{}`,   
 {
   label: 'define',
   detail: 'this is something'

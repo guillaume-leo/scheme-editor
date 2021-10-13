@@ -4,12 +4,12 @@
     <input type="text" style="display:none" id="elementt">
     <TitleBar/>
     <div class="a">
-     <Editor v-for="editor in editors" 
-      :key="editor" 
-      :name="editor.name"
-      :code="editor.code">
-     </Editor>
-    <button @click="testt"></button>
+      <Editor v-for="editor in editors" 
+        :key="editor" 
+        :name="editor.name"
+        :code="editor.code">
+      </Editor>
+
     </div>
     <div class="b">
       <Info/>
@@ -33,10 +33,10 @@ import Info from '@/components/Info.vue'
 
 import { ALL_SHORTCUTS } from '@/config/shortcuts'
 import _ from 'lodash'
-import { test, send } from '@/config/osc'
+import { WSconnect } from '@/config/osc'
 
 
-test()
+WSconnect()
 
 ALL_SHORTCUTS()
 
@@ -57,9 +57,6 @@ export default {
     }
   },
   methods:{
-    testt(){
-      send('baba')
-    }
   },
   computed:{
     getEditors(){
