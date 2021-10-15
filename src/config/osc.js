@@ -3,7 +3,9 @@ import store from '@/store'
 let ws
 
 export const WSconnect = async () => {
+    store.commit('console/print','waiting for connection...');
     ws = await WebSocket.connect('ws://localhost:9001').then(r => {
+        store.commit('console/print','WebSocket connected on port 9001');
         _updateResponse('WebSocket connected on port 9001')
         return r
     }).catch(_updateResponse)
@@ -11,12 +13,13 @@ export const WSconnect = async () => {
 }
 
 export function _updateResponse(returnValue) {
-    let output = typeof returnValue === 'object' ? returnValue.data : returnValue
-    store.commit('console/print',output);
+    console.log(returnValue);
 }
 
 export function WSsend(text) {
-    ws.send(text).then(() => _updateResponse(text)).catch(_updateResponse)
+    ws.send(text).then(() => {
+        store.commit('console/print',text);
+    }).catch(_updateResponse)
 }
 
 export function disconnect() {

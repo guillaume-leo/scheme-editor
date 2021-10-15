@@ -11,6 +11,8 @@
 
 //CODEMIRROR 6
 import {EditorState, EditorView, basicSetup} from "@codemirror/basic-setup"
+import {Decoration} from "@codemirror/view"
+import {StateField, StateEffect} from "@codemirror/state"
 import { schemeLang } from '@/config/editors'
 import { oneDark } from '@/config/cm-theme'
 import {snippets} from "@/config/snippets"
@@ -21,7 +23,7 @@ import { WSsend } from '@/config/osc'
 
 // import { parseBuffer } from '@/config/parseBuffer'
 // import { parseBufferSnippets } from '@/config/parseBufferSnippets'
-
+import { parinferLayer } from '@/config/editors'
 
 
 export default {
@@ -40,18 +42,7 @@ export default {
     },
     mounted(){
 
-      // const onChange = EditorView.updateListener.of((obj) => {
-      //   if (obj.view.hasFocus) this.$store.commit('info/focusedEditor', this.id)
-      //   const cm = this.view.state
-      //   const id = this.editorId
-      //   const currText = cm.doc.toString()
-      //   parseBufferSnippets(currText)
-      //   this.$store.commit('editors/sExpr', {
-      //     id : id,
-      //     sExpr : parseBuffer(currText)
-      //     })
-      // })
-
+      // ONCHANGE commit focusedEditor, updateCode
       const onChange = EditorView.updateListener.of((obj) => {
         if (obj.view.hasFocus) this.$store.commit('info/focusedEditor', this.name)
         const cm = this.view.state
@@ -62,19 +53,58 @@ export default {
         })
       })
 
-/*
-          start === 0 ? 0 : start --
-          let end = /\n\(/.exec(afterCursor)
-          end === null ? 
-            end = currText.length 
-            : end = end.index + beforeCursor.length
-          const sExp = start < currOffset && currOffset + 1 < end ? 
-            currText.slice(start,end) 
-            : ''
-          console.log(sExp, start, currOffset, end);
-*/
 
 
+
+      
+      // state-effect and state-field definition
+      const addBlink = StateEffect.define()
+      const blinkField = StateField.define({
+        create() {
+          return Decoration.none
+        },
+        update(blink, tr) {
+          blink = blink.map(tr.changes)
+          for (let e of tr.effects) if (e.is(addBlink)) {
+            blink = blink.update({
+              add: [blinkMark.range(e.value.from, e.value.to)]
+            })
+          }
+          return blink
+        },
+        provide: f => EditorView.decorations.from(f)
+      })
+
+      // mark definition
+      const blinkMark = Decoration.mark({class: "cm-blink"})
+
+const blinkExpression = () => {
+  let effects = this.view.state.selection.ranges
+    .filter(r => !r.empty)
+    .map(({from, to}) => addBlink.of({from, to}))
+  if (!effects.length) return false
+
+  if (!this.view.state.field(blinkField, false))
+    effects.push(StateEffect.appendConfig.of([blinkField,
+                                              blinkTheme]))
+  this.view.dispatch({effects})
+  return true
+}
+
+      // blinkTheme when mod-e
+      const blinkTheme= EditorView.baseTheme({
+        ".cm-blink": {  
+          backgroundColor:'white',
+          animationName: 'blink',
+          animationDuration: '1s',
+        },
+        '@keyframes blink' : {
+            from: {backgroundColor: 'aliceblue'},
+            to: {backgroundColor: 'black'}
+            },    
+      })  
+
+      // Mod-e eventHandler
       const sendCode = keymap.of([{
         key: "Mod-e",
         preventDefault: true,
@@ -97,13 +127,14 @@ export default {
           const sExp = currText.slice(start, end)
           const sExpIsValid = sExp.match(/\)/gm).length === sExp.match(/\(/gm).length   
           if (cursorPosIsValid && sExpIsValid) WSsend(sExp)
-
+          console.log(blinkExpression);
         }
       }])
-    
+      
       const initialState = EditorState.create({
         doc: this.code,
         extensions: [
+          blinkTheme,
           basicSetup,
           schemeLang,
           sendCode,
@@ -115,7 +146,6 @@ export default {
           ]
       })
 
-
       this.view = new EditorView({
         parent: document.getElementById(this.editorId),
         state: initialState,
@@ -126,13 +156,10 @@ export default {
         name:this.name
       })
 
-
-
-      
     },
     methods:{
-      parinfer(){
-      // parinferLayer(key, this.view.state, this.view)
+      parinfer(key){
+      parinferLayer(key, this.view.state, this.view)
       }
     },
     computed:{
@@ -140,52 +167,18 @@ export default {
         return JSON.stringify(this.$store.getters['editors/getEditors'])
       }
     },
-    watch:{
-      // getEditors: {
-        // handler(newVal, oldVal){
-
-        //   const cmName = this.name
-        //   const newCode = JSON.parse(newVal)
-        //   const oldCode = JSON.parse(oldVal)
-
-        //   const index =_.findIndex(newCode, o => { return o.name == cmName })
-        //   if (index === -1) return
-        //   if (newCode[index].code === oldCode[index].code) return
-        //   console.log(`${cmName} changed`);
-          // this.view.dispatch({
-          //   changes: {
-          //     from: 0, 
-          //     to: this.view.state.doc.length, 
-          //     insert: newCode[index].code
-          //   }
-          // })
-      //   },
-      //   deep: true
-      // }
-    },
-    unmounted(){
-    }
-
-        
-
-    
-
 }
 </script>
 
 <style scoped>
 
-.test{
-  background-color: aqua !important;
-}
-
 p{
+  
+  background-color: rgba(255,255,255,0.15);
   padding: 0;
   margin: 0;
   font-family: monospace;
   color: dimgray;
 }
-
-
 
 </style>
