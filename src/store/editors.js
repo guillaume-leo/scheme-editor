@@ -7,9 +7,13 @@ export const editors = {
         editors:[],
         storedEditors:[],
         prevOffset:0,
+        snippets:[],
         copy:[]
     }),
     mutations: {
+        ['updateSnippets'](state, obj){
+            state.snippets=obj
+        },
         ['changePrevOffset'](state,val){
             state.prevOffset = val
         },
@@ -98,6 +102,9 @@ export const editors = {
 
     },
     getters: {
+        getSnippets(state){
+            return state.snippets
+        },
         getPrevOffset(state){
             return state.prevOffset
         },

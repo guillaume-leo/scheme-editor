@@ -12,19 +12,20 @@
 //CODEMIRROR 6
 import {EditorState, EditorView, basicSetup} from "@codemirror/basic-setup"
 import {Decoration} from "@codemirror/view"
-import {StateField, StateEffect} from "@codemirror/state"
+import {StateField, StateEffect, Compartment} from "@codemirror/state"
 import { schemeLang } from '@/config/editors'
 import { oneDark } from '@/config/cm-theme'
-import {snippets} from "@/config/snippets"
+import {snippetCompletion as snip} from "@codemirror/autocomplete"
 import {keymap} from "@codemirror/view"
 
 import { WSsend } from '@/config/osc'
+import { menuActions } from '@/functions/menuActions'
+import store from '@/store' // eslint-disable-line
+
 // import _ from 'lodash'
 
 // import { parseBuffer } from '@/config/parseBuffer'
-// import { parseBufferSnippets } from '@/config/parseBufferSnippets'
 import { parinferLayer } from '@/config/editors'
-
 
 export default {
     name:'Editor',
@@ -36,13 +37,14 @@ export default {
         return{
             editorId: `__${this.name}__`,
             prevOffset: 0,
-            codeFromVuex:''
+            codeFromVuex:'',
+            allSnippets:[]
 
         }
     },
     mounted(){
 
-      // ONCHANGE commit focusedEditor, updateCode
+      // ONCHANGE commit focusedEditor, updateCode, updateSnippets
       const onChange = EditorView.updateListener.of((obj) => {
         if (obj.view.hasFocus) this.$store.commit('info/focusedEditor', this.name)
         const cm = this.view.state
@@ -83,7 +85,6 @@ export default {
 
       const blink = (view, start, end) => {
         let effects = [addBlink.of({from:start, to:end})]
-          console.log(effects);
         if (!effects.length) return false
 
         if (!view.state.field(blinkField, false))
@@ -132,17 +133,19 @@ export default {
 
         }
       }])
-      
+
+
+      this.customSnippets = new Compartment
       const initialState = EditorState.create({
         doc: this.code,
         extensions: [
           basicSetup,
           schemeLang,
+          this.customSnippets.of(schemeLang.data.of({
+              autocomplete: []
+          })),
           keyMaps,
           onChange,
-          schemeLang.data.of({
-          autocomplete: snippets
-          }),
           oneDark,
           ]
       })
@@ -156,6 +159,8 @@ export default {
         ref: this.view,
         name:this.name
       })
+      menuActions.parseSnippetsAction()
+      blink(this.view, 0, 0)
     },
     methods:{
       parinfer(key){
@@ -164,10 +169,31 @@ export default {
     },
     computed:{
       getEditors(){
-        return JSON.stringify(this.$store.getters['editors/getEditors'])
+        return this.$store.getters['editors/getEditors']
+      },
+      getSnippets(){
+        return this.$store.getters['editors/getSnippets']
       }
     },
+    watch:{
+      getSnippets(newVal){
+        let newSnippets = []
+        newVal.forEach(e => {
+          newSnippets.push(
+            snip(e.code, {label: e.label})
+          )
+        })
+        this.view.dispatch({
+          effects: this.customSnippets.reconfigure(schemeLang.data.of({
+              autocomplete: newSnippets
+          }))
+        })
+
+      }
+    }
 }
+
+
 </script>
 
 <style scoped>

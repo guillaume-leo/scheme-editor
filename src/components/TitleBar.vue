@@ -95,16 +95,13 @@ export default {
   },
   watch: {
       getFileHasChanged(newVal){
-        console.log(newVal);
         this.hasChanged = newVal
       },
       getFileContent(newVal){
-        console.log('FILE CONTENT CHANGED')
         this.fileContent = newVal             
       },
       getEditors:{
         handler(newVal){
-          console.log('EDITORS HAS CHANGED');
           const editors = []
           newVal.forEach(e => {
             editors.push({
@@ -112,11 +109,7 @@ export default {
               code:e.code
             })
           });
-          console.log('FILECONTENT',this.fileContent);
-          console.log('EDITORS',editors);
           const areEquals = _.isEqual(editors, this.fileContent)
-          console.log('ARE EQUALS: ' + areEquals);
-          // console.log('ARE EQUALS', hasChanged);
           this.$store.commit('file/hasChanged',areEquals)
         },
         deep:true

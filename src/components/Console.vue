@@ -1,8 +1,8 @@
 <template>
 
   <p v-for="data in getAllData" :key="data"> 
-      - - - - - <br>
-      {{data.lineNumber}} > <br>
+      • <br>
+      {{data.lineNumber}} • <br>
       {{data.text}} 
       <br>
   </p>

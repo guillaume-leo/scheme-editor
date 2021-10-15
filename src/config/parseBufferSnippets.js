@@ -1,25 +1,21 @@
 
 
-export const parseBufferSnippets = (str)=>{
-
+export const parseBufferSnippets = (doc)=>{
     let start = 0
     let end = 0
     let label = ''
     let allSnippets = []
-    const buffArray = ['',...str.split('\n'),'']
-
-    // let end = 0
+    const buffArray = ['',...doc.toString().split('\n'),'']
     buffArray.forEach((lineContent, lineNb) => {
         if (lineContent.includes('%s ')){
             label = lineContent.split(' ')[1]
-            start = lineNb + 1
+            start = doc.line(lineNb + 1).from 
         }
-        if (lineContent.includes('%s-end')){
-            end = lineNb
+        if (lineContent.includes('%end')){
+            end = doc.line(lineNb).from
                 allSnippets.push({
                     label:label,
-                    start:start,
-                    end:end
+                    code:doc.toString().slice(start, end - 1)
                 })
         }
     })

@@ -1,6 +1,8 @@
 import store from '@/store'
 import { writeFile, readTextFile } from '@tauri-apps/api/fs'
 import { save, open } from '@tauri-apps/api/dialog'
+import { parseBufferSnippets } from '../config/parseBufferSnippets'
+import _ from 'lodash'
 
 
 
@@ -103,6 +105,7 @@ const loadFileAction = ()=>{
                 filePath: e,
                 fileContent: content
             })
+            
         })
     })
 }
@@ -143,6 +146,31 @@ const copyEditorAction = (text)=>{
 
 const pasteEditorAction = ()=>{
     store.commit('editors/pasteEditors')
+    parseSnippetsAction()
+}
+
+/*
+*   ---------------
+*   PARSE ACTIONS
+*   ---------------
+*/
+
+const parseSnippetsAction = ()=>{
+    const allEditors = store.getters['editors/getEditors']
+    let snippets = []
+    allEditors.forEach(e=>{
+        if (e.ref) snippets.push(parseBufferSnippets(e.ref.state.doc))
+    })
+    snippets = _.flatten(snippets).filter((thing, index, self) =>
+        index === self.findIndex((t) => (
+            t.label === thing.label
+        ))
+    )
+    store.commit('editors/updateSnippets', snippets)
+    snippets.reverse().forEach(e=>{
+        store.commit('console/print', `${e.label} ○ ${e.code}`)
+        
+    })
 }
 
 export const menuActions = {
@@ -154,5 +182,6 @@ export const menuActions = {
     copyEditorAction:   copyEditorAction,
     pasteEditorAction:  pasteEditorAction,
     newFileAction:      newFileAction,
-    loadFileAction:     loadFileAction
+    loadFileAction:     loadFileAction,
+    parseSnippetsAction:parseSnippetsAction,
 }

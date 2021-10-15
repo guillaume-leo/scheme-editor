@@ -143,7 +143,15 @@ const editors = [
     }
 ]
 
-
+const parse = [
+    {
+        key: 's',
+        label: 'snippets',
+        children:[],
+        action: ()=>menuActions.parseSnippetsAction(),
+        type:'key'
+    }
+]
 
 export const menu = () =>{
     return [
@@ -168,6 +176,12 @@ export const menu = () =>{
             key: 'o',
             label: 'options',
             children:[]                
+        },
+        {
+            key: 'p',
+            label: 'parse',
+            children: parse, 
+            type:'key'               
         }
     ]
 }
