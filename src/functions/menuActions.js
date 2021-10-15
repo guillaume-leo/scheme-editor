@@ -69,6 +69,7 @@ const saveAsAction = ()=>{
                 filePath: e,
                 fileContent: editors
             })
+            store.commit('file/hasChanged',true)
             return store.commit('console/print', `${e} have been written`)
         })  
     })

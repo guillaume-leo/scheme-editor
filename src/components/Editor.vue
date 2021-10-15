@@ -53,91 +53,92 @@ export default {
         })
       })
 
-
-
-
-      
-      // state-effect and state-field definition
       const addBlink = StateEffect.define()
+
       const blinkField = StateField.define({
         create() {
           return Decoration.none
         },
-        update(blink, tr) {
-          blink = blink.map(tr.changes)
+        update(blinks, tr) {
+          blinks = blinks.map(tr.changes)
           for (let e of tr.effects) if (e.is(addBlink)) {
-            blink = blink.update({
+            blinks = blinks.update({
               add: [blinkMark.range(e.value.from, e.value.to)]
             })
           }
-          return blink
+          return blinks
         },
         provide: f => EditorView.decorations.from(f)
       })
 
-      // mark definition
       const blinkMark = Decoration.mark({class: "cm-blink"})
 
-const blinkExpression = () => {
-  let effects = this.view.state.selection.ranges
-    .filter(r => !r.empty)
-    .map(({from, to}) => addBlink.of({from, to}))
-  if (!effects.length) return false
+      const underlineTheme = EditorView.baseTheme({
+        ".cm-blink": {  animationName: 'blink',
+                        animationDuration: '1s',
+                        borderRadius:'2.5px',
+                      }
+      })
 
-  if (!this.view.state.field(blinkField, false))
-    effects.push(StateEffect.appendConfig.of([blinkField,
-                                              blinkTheme]))
-  this.view.dispatch({effects})
-  return true
-}
 
-      // blinkTheme when mod-e
-      const blinkTheme= EditorView.baseTheme({
-        ".cm-blink": {  
-          backgroundColor:'white',
-          animationName: 'blink',
-          animationDuration: '1s',
-        },
-        '@keyframes blink' : {
-            from: {backgroundColor: 'aliceblue'},
-            to: {backgroundColor: 'black'}
-            },    
-      })  
+      const blink = (view, start, end) => {
+        let effects = [addBlink.of({from:start, to:end})]
+          console.log(effects);
+        if (!effects.length) return false
 
-      // Mod-e eventHandler
-      const sendCode = keymap.of([{
+        if (!view.state.field(blinkField, false))
+          effects.push(StateEffect.appendConfig.of([blinkField,
+                                                    underlineTheme]))
+        view.dispatch({effects})
+        return true
+      }
+
+
+      const keyMaps = keymap.of([{
         key: "Mod-e",
         preventDefault: true,
         run: ()=>{
+          let sExp =''
           const cm = this.view.state
           let currOffset = cm.selection.main.head
           if (currOffset === 0) return 
           const currText = cm.doc.toString()
-          if (currText[currOffset - 1] === '(') currOffset ++  
+          if (currText[currOffset - 1] === '(') currOffset ++ 
           const beforeCursor = currText.slice(0,currOffset)
           const afterCursor = currText.slice(currOffset)
-          let end = afterCursor.search(/^\([a-zA-Z]/gm)
-          if (end === -1) end = currText.length
-          end += beforeCursor.length
-          end = currText.slice(0,end).lastIndexOf(currText.slice(0,end).match(/\)/gm).pop()) + 1
-          let start = currOffset > 0 ?
-          beforeCursor.lastIndexOf(beforeCursor.match(/^\([a-zA-Z]/gm).pop())
-          :0
-          const cursorPosIsValid = start < currOffset && currOffset < end
-          const sExp = currText.slice(start, end)
-          const sExpIsValid = sExp.match(/\)/gm).length === sExp.match(/\(/gm).length   
-          if (cursorPosIsValid && sExpIsValid) WSsend(sExp)
-          console.log(blinkExpression);
+          // compute the beggining of the s-exp from cursor
+          let start = beforeCursor.match(/^\([a-zA-Z]/gm)
+          if (start===null) return 
+          start = beforeCursor.lastIndexOf(start.pop())
+          // compute end of the s-exp from cursor
+          let end = afterCursor.match(/^\([a-zA-Z]/gm)
+          if (end === null) {
+            end = currText.lastIndexOf(currText.match(/\)/gm).pop()) + 1
+            sExp = currText.slice(start, end)
+            if (start < currOffset && currOffset < end){
+              blink(this.view, start, end)
+              WSsend(sExp)
+            }
+            return
+          }
+          let nextExpIndex = /^\([a-zA-Z]/gm.exec(afterCursor).index + beforeCursor.length
+          end = currText.slice(0, nextExpIndex)
+          end = end.lastIndexOf(end.match(/\)/gm).pop()) + 1
+          sExp = currText.slice(start, end)
+          if (start < currOffset && currOffset < end){
+            blink(this.view, start, end)
+            WSsend(sExp)
+          }        
+
         }
       }])
       
       const initialState = EditorState.create({
         doc: this.code,
         extensions: [
-          blinkTheme,
           basicSetup,
           schemeLang,
-          sendCode,
+          keyMaps,
           onChange,
           schemeLang.data.of({
           autocomplete: snippets
@@ -155,7 +156,6 @@ const blinkExpression = () => {
         ref: this.view,
         name:this.name
       })
-
     },
     methods:{
       parinfer(key){
