@@ -26,7 +26,7 @@ export const parseBufferShortcuts = (str)=>{
             shortcut = `${modifiers[mod]}+${lineContent.split(' ')[1].split('-')[1]}`
             start = lineNb + 1
         }
-        if (lineContent.includes('%k-end')){
+        if (lineContent.includes('%end')){
             end = lineNb
                 allShortCuts.push({
                     shortcut:shortcut,
