@@ -20,7 +20,7 @@ export const oneDarkTheme  = EditorView.theme({
 
     '@keyframes blink' : {
       from: {backgroundColor: 'rgba(175,175,175,1.0)'},
-      to: {backgroundColor: 'rgba(0.0,0.0,0.0,0.5)'}
+      to: {backgroundColor: 'rgba(0.0,0.0,0.0,0.15)'}
     },
   
     ".cm-content": {

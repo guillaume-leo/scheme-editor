@@ -7,7 +7,7 @@ export const parseBufferSnippets = (doc)=>{
     let allSnippets = []
     const buffArray = ['',...doc.toString().split('\n'),'']
     buffArray.forEach((lineContent, lineNb) => {
-        if (lineContent.includes('%s ')){
+        if (lineContent.includes('% ')){
             label = lineContent.split(' ')[1]
             start = doc.line(lineNb + 1).from 
         }

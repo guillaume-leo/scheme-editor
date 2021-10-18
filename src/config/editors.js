@@ -15,7 +15,6 @@ export const parinferLayer = (key, state, view)=>{ //this.vew
     const cm = state//this.view.state
     const tooltip = cm.values[4].open ? true : false
     const snippet = Object.keys({...cm.values[6]}).includes('ranges')
-
     if (tooltip || snippet) return
     if (key.ctrlKey || key.shiftKey || key.key === 'Shift'|| key.key === 'Control') return
 

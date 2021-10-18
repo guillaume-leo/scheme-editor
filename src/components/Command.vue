@@ -2,7 +2,7 @@
 <div id="---commands">
     <!-- <input tabindex="-1" id='commandInput' @keyup.enter="execCommand" type="text" name="" v-model="command"> -->
     <p v-for="data in infoPanel" :key="data"> 
-        <b>{{data[0]}} ►</b> {{data[1]}} 
+        {{data[0]}} ► {{data[1]}} 
         <br>
         <br>
     </p>
@@ -151,7 +151,7 @@ export default {
     p{
         padding: 5px;
         margin: auto;
-        font-size: 8px;
+        font-size: 12px;
         color: rgba(255, 255, 255, 0.7);
     }
 </style>

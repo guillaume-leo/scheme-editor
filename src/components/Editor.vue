@@ -20,12 +20,13 @@ import {keymap} from "@codemirror/view"
 
 import { WSsend } from '@/config/osc'
 import { menuActions } from '@/functions/menuActions'
-import store from '@/store' // eslint-disable-line
+// import store from '@/store' // eslint-disable-line
 
 // import _ from 'lodash'
 
 // import { parseBuffer } from '@/config/parseBuffer'
 import { parinferLayer } from '@/config/editors'
+
 
 export default {
     name:'Editor',
@@ -46,6 +47,7 @@ export default {
 
       // ONCHANGE commit focusedEditor, updateCode, updateSnippets
       const onChange = EditorView.updateListener.of((obj) => {
+        console.log(obj);
         if (obj.view.hasFocus) this.$store.commit('info/focusedEditor', this.name)
         const cm = this.view.state
         const currText = cm.doc.toString()
@@ -65,19 +67,27 @@ export default {
           blinks = blinks.map(tr.changes)
           for (let e of tr.effects) if (e.is(addBlink)) {
             blinks = blinks.update({
-              add: [blinkMark.range(e.value.from, e.value.to)]
+              add: [blinkMark.range(e.value.from, e.value.to), blinkMarkOff.range(e.value.from, e.value.to)]
             })
           }
           return blinks
         },
         provide: f => EditorView.decorations.from(f)
       })
-
+      const blinkMarkOff = Decoration.mark({class: "cm-blinkOff"})
       const blinkMark = Decoration.mark({class: "cm-blink"})
 
-      const underlineTheme = EditorView.baseTheme({
+      const blinkTheme = EditorView.baseTheme({
         ".cm-blink": {  animationName: 'blink',
                         animationDuration: '1s',
+
+                        borderRadius:'2.5px',
+                      }
+      })
+
+      const blinkThemeOff = EditorView.baseTheme({
+        ".cm-blinkOff": {  animationName: 'blink',
+                        animationDuration: '0s',
                         borderRadius:'2.5px',
                       }
       })
@@ -88,8 +98,14 @@ export default {
         if (!effects.length) return false
 
         if (!view.state.field(blinkField, false))
+
           effects.push(StateEffect.appendConfig.of([blinkField,
-                                                    underlineTheme]))
+                                                    blinkThemeOff]))
+
+          effects.push(StateEffect.appendConfig.of([blinkField,
+                                                    blinkTheme]))
+
+
         view.dispatch({effects})
         return true
       }

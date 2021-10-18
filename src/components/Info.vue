@@ -69,7 +69,7 @@ p{
     padding: 0;
     margin: 2px;
     text-align: left;
-    font-size: 10px;
+    font-size: 12px;
     color: rgba(255, 255, 255, 0.8);
     font-family: 'Fira Code';
     cursor: crosshair;
