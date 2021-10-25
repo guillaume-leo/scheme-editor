@@ -2,6 +2,7 @@ import store from '@/store'
 import { writeFile, readTextFile } from '@tauri-apps/api/fs'
 import { save, open } from '@tauri-apps/api/dialog'
 import { parseBufferSnippets } from '../config/parseBufferSnippets'
+import { parseBufferHotKeys } from '../config/parseBufferHotKeys'
 import _ from 'lodash'
 
 
@@ -95,7 +96,6 @@ const loadFileAction = ()=>{
         .then((text)=>{
             const content = JSON.parse(text)
             content.map((el)=>{
-                console.log(content);
                 store.commit('editors/newEditor', {
                     name:el.name, 
                     code:el.code
@@ -173,6 +173,24 @@ const parseSnippetsAction = ()=>{
     })
 }
 
+const parseHotKeysAction = ()=>{
+    const allEditors = store.getters['editors/getEditors']
+    let hotkeys = []
+    allEditors.forEach(e=>{
+        if (e.ref) hotkeys.push(parseBufferHotKeys(e.ref.state.doc, e.ref))
+    })
+    hotkeys = _.flatten(hotkeys).filter((thing, index, self) =>
+        index === self.findIndex((t) => (
+            t.hotkey === thing.hotkey
+        ))
+    )
+    store.commit('editors/updateHotKeys', hotkeys)    
+    hotkeys.reverse().forEach(e=>{
+        store.commit('console/print', `${e.hotkey} ○ ${e.code}`)
+        
+    })
+}
+
 export const menuActions = {
     saveAction:         saveAction,
     saveAsAction:       saveAsAction,
@@ -184,4 +202,5 @@ export const menuActions = {
     newFileAction:      newFileAction,
     loadFileAction:     loadFileAction,
     parseSnippetsAction:parseSnippetsAction,
+    parseHotKeysAction: parseHotKeysAction,
 }

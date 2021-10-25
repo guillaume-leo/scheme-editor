@@ -12,7 +12,6 @@ export const file = {
       ['setFilePath'](state, payload){
         state.filePath = payload.filePath
         state.fileContent = payload.fileContent
-        console.log('FILE CONTENT FROM VUEX MUTATION ',payload.fileContent);
       },
 
       ['eraseFilePath'](state){

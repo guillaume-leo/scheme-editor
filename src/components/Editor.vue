@@ -47,7 +47,6 @@ export default {
 
       // ONCHANGE commit focusedEditor, updateCode, updateSnippets
       const onChange = EditorView.updateListener.of((obj) => {
-        console.log(obj);
         if (obj.view.hasFocus) this.$store.commit('info/focusedEditor', this.name)
         const cm = this.view.state
         const currText = cm.doc.toString()
@@ -58,6 +57,7 @@ export default {
       })
 
       const addBlink = StateEffect.define()
+      const removeBlink = StateEffect.define()
 
       const blinkField = StateField.define({
         create() {
@@ -65,42 +65,45 @@ export default {
         },
         update(blinks, tr) {
           blinks = blinks.map(tr.changes)
-          for (let e of tr.effects) if (e.is(addBlink)) {
-            blinks = blinks.update({
-              add: [blinkMark.range(e.value.from, e.value.to), blinkMarkOff.range(e.value.from, e.value.to)]
-            })
+          for (let e of tr.effects) {
+            if (e.is(addBlink)) {
+              blinks = blinks.update({
+                add: [blinkMark.range(e.value.from, e.value.to)]
+              })
+            }else if (e.is(removeBlink)) {
+              blinks = blinks.update({filter: e.value})}
           }
           return blinks
         },
         provide: f => EditorView.decorations.from(f)
       })
-      const blinkMarkOff = Decoration.mark({class: "cm-blinkOff"})
-      const blinkMark = Decoration.mark({class: "cm-blink"})
+
+      function removeMarks(view, a, b) {
+        view.dispatch({
+          effects: removeBlink.of((from, to) => to <= a || from >= b)
+        })
+      }
+
+      const blinkMark = Decoration.mark(
+        {
+          class: "cm-blink",
+          'id': 'BLINK'
+        })
 
       const blinkTheme = EditorView.baseTheme({
         ".cm-blink": {  animationName: 'blink',
                         animationDuration: '1s',
 
                         borderRadius:'2.5px',
-                      }
-      })
-
-      const blinkThemeOff = EditorView.baseTheme({
-        ".cm-blinkOff": {  animationName: 'blink',
-                        animationDuration: '0s',
-                        borderRadius:'2.5px',
-                      }
+                      },
       })
 
 
       const blink = (view, start, end) => {
         let effects = [addBlink.of({from:start, to:end})]
         if (!effects.length) return false
-
+0
         if (!view.state.field(blinkField, false))
-
-          effects.push(StateEffect.appendConfig.of([blinkField,
-                                                    blinkThemeOff]))
 
           effects.push(StateEffect.appendConfig.of([blinkField,
                                                     blinkTheme]))
@@ -134,6 +137,7 @@ export default {
             sExp = currText.slice(start, end)
             if (start < currOffset && currOffset < end){
               blink(this.view, start, end)
+              setTimeout(()=>{removeMarks(this.view, start, end)}, 1000)
               WSsend(sExp)
             }
             return
@@ -144,24 +148,70 @@ export default {
           sExp = currText.slice(start, end)
           if (start < currOffset && currOffset < end){
             blink(this.view, start, end)
+            setTimeout(()=>{removeMarks(this.view, start, end)}, 1000)
+
             WSsend(sExp)
           }        
 
         }
-      }])
+      },
+      {
+        key: "Mod-ArrowDown",
+        preventDefault: true,
+        run: ()=>{
+          const cm = this.view.state
+          let currOffset = cm.selection.main.head
+          const currText = cm.doc.toString()
+          if (currText[currOffset - 1] === '(') currOffset ++ 
+          const beforeCursor = currText.slice(0,currOffset)
+          const afterCursor = currText.slice(currOffset)
+          let nextExp = afterCursor.match(/^\([a-zA-Z]/gm)
+          console.log(nextExp);
+          if (nextExp === null) return
+          const newPos = afterCursor.indexOf(nextExp[0])+beforeCursor.length + 1
+          this.view.dispatch({
+              selection: {
+              anchor: newPos
+              }
+          })
+        }
+      },
+      {
+        key: "Mod-ArrowUp",
+        preventDefault: true,
+        run: ()=>{
+          const cm = this.view.state
+          let currOffset = cm.selection.main.head
+          const currText = cm.doc.toString()
+          if (currText[currOffset - 1] === '(') currOffset ++ 
+          const beforeCursor = currText.slice(0,currOffset)
+          let prevExp = beforeCursor.match(/^\([a-zA-Z]/gm)
+          if (prevExp===null) return 
+          prevExp.pop()
+          const newPos = beforeCursor.lastIndexOf(prevExp.pop()) + 1
+          this.view.dispatch({
+              selection: {
+              anchor: newPos
+              }
+          })
+        }
+      }
+      ])
 
 
       this.customSnippets = new Compartment
+      this.customHotKeys = new Compartment
       const initialState = EditorState.create({
         doc: this.code,
         extensions: [
           basicSetup,
-          schemeLang,
           this.customSnippets.of(schemeLang.data.of({
               autocomplete: []
           })),
+          this.customHotKeys.of(keymap.of([])),
           keyMaps,
           onChange,
+          schemeLang,
           oneDark,
           ]
       })
@@ -181,7 +231,7 @@ export default {
     methods:{
       parinfer(key){
       parinferLayer(key, this.view.state, this.view)
-      }
+      },
     },
     computed:{
       getEditors(){
@@ -189,6 +239,9 @@ export default {
       },
       getSnippets(){
         return this.$store.getters['editors/getSnippets']
+      },
+      getHotKeys(){
+        return this.$store.getters['editors/getHotKeys']
       }
     },
     watch:{
@@ -204,7 +257,22 @@ export default {
               autocomplete: newSnippets
           }))
         })
-
+      },
+      getHotKeys(newVal){
+        if (newVal.length < 1) return
+        let newHotKeys = []
+        newVal.forEach(e => {
+          newHotKeys.push({
+            key: e.hotkey,
+            preventDefault: true,
+            run: ()=>{
+              WSsend(e.code)
+            }
+          })
+        })
+        this.view.dispatch({
+          effects: this.customHotKeys.reconfigure(keymap.of(newHotKeys))
+        })
       }
     }
 }

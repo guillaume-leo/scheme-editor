@@ -150,6 +150,13 @@ const parse = [
         children:[],
         action: ()=>menuActions.parseSnippetsAction(),
         type:'key'
+    },
+    {
+        key: 'h',
+        label: 'hotkeys',
+        children:[],
+        action: ()=>menuActions.parseHotKeysAction(),
+        type:'key'
     }
 ]
 

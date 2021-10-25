@@ -8,11 +8,15 @@ export const editors = {
         storedEditors:[],
         prevOffset:0,
         snippets:[],
+        hotkeys:[],
         copy:[]
     }),
     mutations: {
         ['updateSnippets'](state, obj){
             state.snippets=obj
+        },
+        ['updateHotKeys'](state, obj){
+            state.hotkeys=obj
         },
         ['changePrevOffset'](state,val){
             state.prevOffset = val
@@ -104,6 +108,9 @@ export const editors = {
     getters: {
         getSnippets(state){
             return state.snippets
+        },
+        getHotKeys(state){
+            return state.hotkeys
         },
         getPrevOffset(state){
             return state.prevOffset
