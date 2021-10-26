@@ -175,16 +175,6 @@ export const menu = () =>{
             type:'key'               
         },
         {
-            key: 't',
-            label: 'tree commands',
-            children:[]                
-        },
-        {
-            key: 'o',
-            label: 'options',
-            children:[]                
-        },
-        {
             key: 'p',
             label: 'parse',
             children: parse, 

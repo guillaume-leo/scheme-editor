@@ -1,13 +1,11 @@
 <template>
   <p>{{this.name}}</p>
-<div  v-bind="{ id: this.editorId }" @keyup="parinfer" class="editor">
+<div  v-bind="{ id: this.editorId }" class="editor">
 </div>
 </template>
 
 <script>
 
-
-// import _ from 'lodash'
 
 //CODEMIRROR 6
 import {EditorState, EditorView, basicSetup} from "@codemirror/basic-setup"
@@ -20,12 +18,8 @@ import {keymap} from "@codemirror/view"
 
 import { WSsend } from '@/config/osc'
 import { menuActions } from '@/functions/menuActions'
-// import store from '@/store' // eslint-disable-line
 
-// import _ from 'lodash'
 
-// import { parseBuffer } from '@/config/parseBuffer'
-import { parinferLayer } from '@/config/editors'
 
 
 export default {
@@ -227,11 +221,6 @@ export default {
       })
       menuActions.parseSnippetsAction()
       blink(this.view, 0, 0)
-    },
-    methods:{
-      parinfer(key){
-      parinferLayer(key, this.view.state, this.view)
-      },
     },
     computed:{
       getEditors(){
