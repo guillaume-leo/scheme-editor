@@ -177,11 +177,10 @@ export default {
           const cm = this.view.state
           let currOffset = cm.selection.main.head
           const currText = cm.doc.toString()
-          if (currText[currOffset - 1] === '(') currOffset ++ 
           const beforeCursor = currText.slice(0,currOffset)
           let prevExp = beforeCursor.match(/^\([a-zA-Z]/gm)
+          console.log(prevExp);
           if (prevExp===null) return 
-          prevExp.pop()
           const newPos = beforeCursor.lastIndexOf(prevExp.pop()) + 1
           this.view.dispatch({
               selection: {
