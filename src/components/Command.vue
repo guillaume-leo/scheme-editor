@@ -48,7 +48,7 @@ export default {
                 this.prevWord = this.word
                 const action = cmd[nextCommand].action(this.prevWord)
                 if (typeof action === 'object') return await this.cmdSystem(action, cmd[nextCommand].type)
-                this.infoPanel = [['double Alt','command']]
+                this.infoPanel = [['double Alt','menu']]
                 this.word = ''
                 setTimeout(() => {
                     this.storedRef.contentDOM?.focus()
@@ -63,7 +63,7 @@ export default {
     data() {
         return {
             command: '',
-            infoPanel:[['double Alt','command']],
+            infoPanel:[['double Alt','menu']],
             keyPressed:'',
             word: '',
             prevWord:'',
