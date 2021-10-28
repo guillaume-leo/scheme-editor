@@ -34,7 +34,7 @@ For the reason that this project is a new born, it should be considered as a Bet
 
 ### Documentation :
 
-###### 1/ The interface:
+##### 1/ The interface:
 
 ### ![pic1](./doc/pic1.jpg)
 ​	On the top different infos and buttons are shown, on the left side, the path of the current file, on the right we can see four buttons related to transparency, minimize window, maximize window and quit.	
@@ -49,7 +49,9 @@ And finally on the bottom we have the editor console, where are shown commands w
 
 
 
-###### 2/ Evaluation:
+##### 2/ Evaluation:
+
+
 
 To send an expression you just have to put the cursor inside it and press Ctrl-e.
 
@@ -61,7 +63,9 @@ Any line that begins with an open parenthesis followed by a character is taken t
 
 
 
-###### 3/ Snippets:
+##### 3/ Snippets:
+
+
 
 Creating a snippet is really simple. First you have to surround your expression by to specific comments :
 
@@ -69,7 +73,7 @@ Creating a snippet is really simple. First you have to surround your expression 
 
 ;%end at the bottom
 
-Then by using the menu (double alt > p > s) you will record the snippet. Snippets can have place holders by using #{placeholders}, jump to the next placeholders by pressing Tab.
+Then by using the menu (double alt > p > s) you will record all snippets. Snippets can have place holders by using #{placeholders}, jump to the next placeholders by pressing Tab.
 
 example: 
 
@@ -81,5 +85,26 @@ example:
 
 ```
 
-![liveSnippets](.\doc\liveSnippets.gif)
+
+
+##### 3/ Hotkeys:
+
+
+
+Attaching a shortcut to an expression is almost like creating a snippet. First you have to surround your expression by to specific comments :
+
+;%k Mod-Alt-K at the top (Mod is for Ctrl/Cmd) 
+
+;%end at the bottom
+
+Then by using the menu (double alt > p > h) you will record all shortcuts. 
+
+example: 
+
+```scheme
+;%s Mod-l
+(post '(1 2 3))
+;%end
+
+```
 
