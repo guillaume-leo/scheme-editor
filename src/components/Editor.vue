@@ -160,7 +160,6 @@ export default {
           const beforeCursor = currText.slice(0,currOffset)
           const afterCursor = currText.slice(currOffset)
           let nextExp = afterCursor.match(/^\([a-zA-Z]/gm)
-          console.log(nextExp);
           if (nextExp === null) return
           const newPos = afterCursor.indexOf(nextExp[0])+beforeCursor.length + 1
           this.view.dispatch({
@@ -179,7 +178,6 @@ export default {
           const currText = cm.doc.toString()
           const beforeCursor = currText.slice(0,currOffset)
           let prevExp = beforeCursor.match(/^\([a-zA-Z]/gm)
-          console.log(prevExp);
           if (prevExp===null) return 
           const newPos = beforeCursor.lastIndexOf(prevExp.pop()) + 1
           this.view.dispatch({
