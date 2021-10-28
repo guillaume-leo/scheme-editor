@@ -69,7 +69,7 @@ Creating a snippet is really simple. First you have to surround your expression 
 
 ;%end at the bottom
 
-Then by using the menu (double alt > p > s) you will record the snippet. Snippets can have place holders by using #{placeholders}.
+Then by using the menu (double alt > p > s) you will record the snippet. Snippets can have place holders by using #{placeholders}, jump to the next placeholders by pressing Tab.
 
 example: 
 
