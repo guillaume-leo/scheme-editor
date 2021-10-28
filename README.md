@@ -67,7 +67,7 @@ Any line that begins with an open parenthesis followed by a character is taken t
 
 
 
-Creating a snippet is really simple. First you have to surround your expression by to specific comments :
+Creating a snippet is really simple. First you have to surround your expression by two specific comments :
 
 ;%s my-snippet-name at the top
 
@@ -91,7 +91,7 @@ example:
 
 
 
-Attaching a shortcut to an expression is almost like creating a snippet. First you have to surround your expression by to specific comments :
+Attaching a shortcut to an expression is almost like creating a snippet. First you have to surround your expression by two specific comments :
 
 ;%k Mod-Alt-K at the top (Mod is for Ctrl/Cmd) 
 
