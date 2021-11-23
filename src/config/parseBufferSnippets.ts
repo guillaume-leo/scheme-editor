@@ -1,10 +1,10 @@
 
 
-export const parseBufferSnippets = (doc)=>{
+export const parseBufferSnippets = (doc: any)=>{
     let start = 0
     let end = 0
     let label = ''
-    const allSnippets = []
+    const allSnippets: any[] = []
     const buffArray = ['',...doc.toString().split('\n'),'']
     buffArray.forEach((lineContent, lineNb) => {
         if (lineContent.includes('%s ')){

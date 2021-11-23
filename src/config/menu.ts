@@ -1,5 +1,6 @@
 import { menuActions } from '@/functions/menuActions'
 import store from '@/store'
+import { consoleMutations } from '@/store/console/mutations'
 
 const loadConfirm = [
     {
@@ -13,7 +14,7 @@ const loadConfirm = [
         key: 'a',
         label: 'abort load',
         children:[],
-        action: ()=>store.commit('console/print', 'command aborted'),
+        action: ()=>store.commit(consoleMutations.PRINT, 'command aborted'),
         type:'key'
     }
 ]
@@ -87,7 +88,7 @@ const editors = [
                 label: 'Write name and press Enter',
                 children:[],
                 type: 'key',
-                action: name=>menuActions.addEditorAction(name)
+                action: (name:string)=>menuActions.addEditorAction(name)
             }
         ],
         type:'word',
@@ -101,7 +102,7 @@ const editors = [
                 label: 'Write name and press Enter',
                 children:[],
                 type: 'key',
-                action: name=>menuActions.deleteEditorAction(name)
+                action: (name:string)=>menuActions.deleteEditorAction(name)
             }
         ],
         type: 'word',
@@ -115,7 +116,7 @@ const editors = [
                 label: 'Write name and press Enter',
                 children:[],
                 type: 'key',
-                action: name=>menuActions.renameEditorAction(name)
+                action: (name:string)=>menuActions.renameEditorAction(name)
             }
         ],
         type: 'word',
@@ -129,7 +130,7 @@ const editors = [
                 label: 'Write name(s) and press Enter',
                 children:[],
                 type: 'key',
-                action: name=>menuActions.copyEditorAction(name)
+                action: (name:string)=>menuActions.copyEditorAction(name)
             }
         ],
         type: 'word',

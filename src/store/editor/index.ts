@@ -1,17 +1,19 @@
 import { Module } from "vuex";
-import { ConsoleState } from "./types";
+import { EditorState } from "./types";
 import { RootState } from "../types";
 import { getters } from "./getters";
 import { mutations } from "./mutations";
 
-export const state: ConsoleState = {
-        consoleData: [],
-        consoleLineNumber:0
+export const state: EditorState = {
+    editors:[],
+    snippets:[],
+    hotkeys:[],
+    copy:[]
 }
 
 const namespaced: boolean = true
 
-export const console: Module <ConsoleState, RootState> = {
+export const editor: Module <EditorState, RootState> = {
     namespaced,
     state,
     getters,

@@ -1,6 +1,6 @@
 import WebSocket from 'tauri-plugin-websocket-api'
 import store from '@/store'
-let ws
+let ws:any
 
 export const WSconnect = async () => {
     store.commit('console/print','waiting for connection...');
@@ -12,11 +12,11 @@ export const WSconnect = async () => {
     ws.addListener(_updateResponse)
 }
 
-export function _updateResponse(returnValue) {
+export function _updateResponse(returnValue:string) {
     console.log(returnValue);
 }
 
-export function WSsend(text) {
+export function WSsend(text:string) {
     ws.send(text).then(() => {
         store.commit('console/print',text);
     }).catch(_updateResponse)

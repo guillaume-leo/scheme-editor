@@ -1,9 +1,9 @@
 
-export const parseBufferHotKeys = (doc, ref)=>{
+export const parseBufferHotKeys = (doc: any, ref: any)=>{
     let start = 0
     let end = 0
     let shortcut = ''
-    const allHotKeys = []
+    const allHotKeys : any[] = []
     const buffArray = ['',...doc.toString().split('\n'),'']
     buffArray.forEach((lineContent, lineNb) => {
         if (lineContent.includes('%k ')){

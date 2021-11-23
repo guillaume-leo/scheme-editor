@@ -2,7 +2,7 @@ import { MutationTree } from "vuex";
 import { ConsoleState } from './types'
 
 export enum consoleMutations {
-    PRINT = "console/PRINT",
+    PRINT = 'console/PRINT',
 }
 
 export const mutations: MutationTree<ConsoleState> = {

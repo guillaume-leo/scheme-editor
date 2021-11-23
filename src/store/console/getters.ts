@@ -7,8 +7,5 @@ export enum consoleGetters {
 }
 
 export const getters: GetterTree<ConsoleState, RootState> = {
-    GET_DATA (state){
-        const { consoleData } = state  
-        return consoleData
-    }
+    GET_DATA : state => state.consoleData
 }
