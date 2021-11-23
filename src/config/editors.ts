@@ -6,7 +6,7 @@ import store from '@/store'
 export const schemeLang = StreamLanguage.define(scheme) 
 
 export const  offsetToPos = (doc, offset) => {
-    let line = doc.lineAt(offset)
+    const line = doc.lineAt(offset)
     return {line: line.number - 1, ch: offset - line.from}
 } 
 

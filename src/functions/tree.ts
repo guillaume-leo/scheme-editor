@@ -18,7 +18,7 @@ export const  getNodeFromTree = (node, name) => {
     if (node.name === name) {
         return node;
     } else if (node.children != null) {
-        var result = null;
+        let result = null;
         for (let i = 0; result == null && i < node.children.length; i++) {
             result = getNodeFromTree(node.children[i], name);
         }
@@ -51,7 +51,7 @@ export const insertNodeIntoTree = (node, name, newNode) => {
 export const deleteNodeFromTree = (node, name) => {
     if (node.children != null) {
         for (let i = 0; i < node.children.length; i++) {
-            let filtered = node.children.filter(f => f.name == name);
+            const filtered = node.children.filter(f => f.name == name);
             if (filtered && filtered.length > 0) {
                 node.children = node.children.filter(f => f.name != name);
                 return;

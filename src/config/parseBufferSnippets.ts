@@ -4,7 +4,7 @@ export const parseBufferSnippets = (doc)=>{
     let start = 0
     let end = 0
     let label = ''
-    let allSnippets = []
+    const allSnippets = []
     const buffArray = ['',...doc.toString().split('\n'),'']
     buffArray.forEach((lineContent, lineNb) => {
         if (lineContent.includes('%s ')){

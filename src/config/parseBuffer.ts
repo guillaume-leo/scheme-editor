@@ -26,7 +26,7 @@ export const parseBuffer = str => {
     let newVal = 0
     let sExpStart = []
     let sExpEnd = []
-    let sExp = []
+    const sExp = []
     
     const buffArray = ['',...str.split('\n'),'']
 

@@ -3,7 +3,7 @@ export const parseBufferHotKeys = (doc, ref)=>{
     let start = 0
     let end = 0
     let shortcut = ''
-    let allHotKeys = []
+    const allHotKeys = []
     const buffArray = ['',...doc.toString().split('\n'),'']
     buffArray.forEach((lineContent, lineNb) => {
         if (lineContent.includes('%k ')){

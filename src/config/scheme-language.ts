@@ -31,7 +31,7 @@
     const {foldNodeProp, foldInside, indentNodeProp} = CM["@codemirror/language"];
     const {styleTags, tags: t} = CM["@codemirror/highlight"];
   
-    let parserWithMetadata = parser.configure({
+    const parserWithMetadata = parser.configure({
       props: [
         styleTags({
           Identifier: t.variableName,
@@ -82,7 +82,7 @@
   
     const {EditorState, EditorView, basicSetup} = CM["@codemirror/basic-setup"];
   
-    let mystate = EditorState.create({
+    const mystate = EditorState.create({
       doc: `(defun check-login (name password) ; absolutely secure\n  (if (equal name "admin")\n    (equal password "12345")\n    #t))`,
       extensions: [basicSetup, example()]
     });
