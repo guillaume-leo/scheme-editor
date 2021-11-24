@@ -1,20 +1,17 @@
 import { Module } from "vuex";
-import { EditorState } from "./types";
+import { CommandState } from "./types";
 import { RootState } from "../types";
 import { getters } from "./getters";
 import { mutations } from "./mutations";
 
-export const state: EditorState = {
-    editors:[],
-    snippets:[],
-    hotkeys:[],
-    copy:[],
-    focusedEditor:[]
+export const state: CommandState = {
+        commandData: [['double Alt', 'menu']],
+        inputWord:''
 }
 
 const namespaced: boolean = true
 
-export const editor: Module <EditorState, RootState> = {
+export const command: Module <CommandState, RootState> = {
     namespaced,
     state,
     getters,

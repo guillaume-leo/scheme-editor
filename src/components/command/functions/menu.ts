@@ -1,6 +1,7 @@
-import { menuActions } from '@/functions/menuActions'
+import { menuActions } from '@/components/command/functions/menuActions'
 import store from '@/store'
 import { consoleMutations } from '@/store/console/mutations'
+import { fsGetters } from '@/store/fs/getters'
 
 const loadConfirm = [
     {
@@ -31,7 +32,7 @@ const newFileConfirm = [
         key: 'a',
         label: 'abort new file',
         children:[],
-        action: ()=>store.commit('console/print', 'command aborted'),
+        action: ()=>store.commit(consoleMutations.PRINT, 'command aborted'),
         type:'key'
     }
 ]
@@ -42,9 +43,9 @@ const file = [
         label: 'new file',
         children:[],
         action:()=>{
-            const fileIsSafe = store.getters['file/getFileHasChanged']
-            if (!fileIsSafe) {
-                store.commit('console/print', 'File not saved, do you want to proceed?')
+            const editorHasChanged = store.getters[fsGetters.GET_HAS_CHANGED]
+            if (editorHasChanged) {
+                store.commit(consoleMutations.PRINT, 'File not saved, do you want to proceed?')
                 return newFileConfirm
             }
             menuActions.newFileAction()},
@@ -69,9 +70,9 @@ const file = [
         label: 'load',
         children:[],
         action:()=>{
-            const fileIsSafe = store.getters['file/getFileHasChanged']
-            if (!fileIsSafe) {
-                store.commit('console/print', 'File not saved, do you want to proceed?')
+            const editorHasChanged = store.getters[fsGetters.GET_HAS_CHANGED]
+            if (editorHasChanged) {
+                store.commit(consoleMutations.PRINT, 'File not saved, do you want to proceed?')
                 return loadConfirm
             }
             menuActions.loadFileAction()},

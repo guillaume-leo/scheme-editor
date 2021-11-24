@@ -1,13 +1,15 @@
 import store from '@/store'
 import { writeFile, readTextFile } from '@tauri-apps/api/fs'
 import { save, open } from '@tauri-apps/api/dialog'
-import { parseBufferSnippets } from '../config/parseBufferSnippets'
-import { parseBufferHotKeys } from '../config/parseBufferHotKeys'
+import { parseBufferSnippets } from '../../editor/functions/parseBufferSnippets'
+import { parseBufferHotKeys } from '../../editor/functions/parseBufferHotKeys'
 import _ from 'lodash'
 import { editorMutations } from '@/store/editor/mutations'
 import { editorGetters } from '@/store/editor/getters'
 import { consoleMutations } from '@/store/console/mutations'
 import { editor } from '@/store/editor/types'
+import { fsGetters } from '@/store/fs/getters'
+import { fsMutations } from '@/store/fs/mutations'
 
 
 
@@ -32,18 +34,18 @@ const saveAction = ()=>{
             code:e.code
         })    
     })
-    const path = store.getters['file/getFilePath'] 
+    const path = store.getters[fsGetters.GET_FILE_PATH] 
     if (path.length > 0){
 
         writeFile({
             path: path,
             contents: JSON.stringify(editors)
         }).then(()=>{
-            store.commit('file/setFilePath', {
+            store.commit(fsMutations.SET_FILEPATH, {
                 filePath: path,
                 fileContent: editors
             })
-            store.commit('file/hasChanged',true)
+            store.commit(fsMutations.HAS_CHANGED,false)
             return store.commit(consoleMutations.PRINT, `${path}`)
         })
     }else{
@@ -72,12 +74,12 @@ const saveAsAction = ()=>{
             path: e,
             contents: JSON.stringify(editors)
         }).then(()=>{
-            store.commit('file/setFilePath', {
+            store.commit(fsMutations.SET_FILEPATH, {
                 filePath: e,
                 fileContent: editors
             })
-            store.commit('file/hasChanged',true)
-            return store.commit('console/print', `${e} have been written`)
+            store.commit(fsMutations.HAS_CHANGED,false)
+            return store.commit(consoleMutations.PRINT, `${e} have been written`)
         })  
     })
 
@@ -105,7 +107,7 @@ const loadFileAction = ()=>{
                     code:el.code
                 })
             })
-            store.commit('file/setFilePath', {
+            store.commit(fsMutations.SET_FILEPATH, {
                 filePath: e,
                 fileContent: content
             })
@@ -121,23 +123,23 @@ const loadFileAction = ()=>{
 */
 
 const addEditorAction = (editorName: string)=>{
-    const editorsName = store.getters['editors/getEditorsName']
-    if (editorsName.includes(editorName)) return store.commit('console/print', `error : ${editorName} already exist`)
-    store.commit('editors/newEditor', {
+    const editorsName = store.getters[editorGetters.GET_EDITORS_NAME]
+    if (editorsName.includes(editorName)) return store.commit(consoleMutations.PRINT, `error : ${editorName} already exist`)
+    store.commit(editorMutations.NEW_EDITOR, {
         name:editorName, 
-        code:''
+        code:'(define something 123)'
     })
 }
 
 const deleteEditorAction = (editorName: string)=>{
-    store.commit('editors/deleteEditor', {
+    store.commit(editorMutations.DELETE_EDITOR, {
         name:editorName
         })
 }
 
 const renameEditorAction = (text: string)=>{
     const input = text.split(' ')
-    store.commit('editors/renameEditor', {
+    store.commit(editorMutations.RENAME_EDITOR, {
         name:input[0],
         newName:input[1]
         })
@@ -145,11 +147,11 @@ const renameEditorAction = (text: string)=>{
 
 const copyEditorAction = (text: string)=>{
     const input = text.split(' ')
-    store.commit('editors/copyEditors', input)
+    store.commit(editorMutations.COPY_EDITORS, input)
 }
 
 const pasteEditorAction = ()=>{
-    store.commit('editors/pasteEditors')
+    store.commit(editorMutations.PASTE_EDITORS)
     parseSnippetsAction()
 }
 
@@ -190,7 +192,7 @@ const parseHotKeysAction = ()=>{
     )
     store.commit(editorMutations.UPDATE_HOTKEYS, hotkeys)    
     hotkeys.reverse().forEach(e=>{
-        store.commit('console/print', `${e.hotkey} ○ ${e.code}`)
+        store.commit(consoleMutations.PRINT, `${e.hotkey} ○ ${e.code}`)
         
     })
 }

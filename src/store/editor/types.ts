@@ -1,7 +1,7 @@
 export interface editor {
     name:string,
     code:string,
-    ref:any[]
+    ref?:any[],
 }
 
 export interface EditorState {
@@ -9,5 +9,6 @@ export interface EditorState {
     snippets: any[]
     hotkeys: any[]
     copy: any[]
+    focusedEditor: any[]
 }
 

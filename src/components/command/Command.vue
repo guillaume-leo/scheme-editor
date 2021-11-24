@@ -1,11 +1,17 @@
 <script setup lang='ts'>
-import { ref } from 'vue';
+import store from '@/store';
+import { CommandGetters } from '@/store/command/getters';
+import { computed } from 'vue';
+import { keyPress } from './functions/doubleAlt'
 
 
 
-let infoPanel= ref([['double Alt', 'menu']])
+let infoPanel= computed(()=>store.getters[CommandGetters.GET_DATA])
+let word= computed(()=>store.getters[CommandGetters.GET_WORD])
 
 
+
+window.onkeyup = (key: KeyboardEvent) => keyPress(key);
 
 
 </script>
@@ -19,7 +25,7 @@ let infoPanel= ref([['double Alt', 'menu']])
         <br>
         <br>
     </p>
-    <!-- <p>{{word}}</p> -->
+    <p>{{word}}</p>
 
 </div>
 </template>

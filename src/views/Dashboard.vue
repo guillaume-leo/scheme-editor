@@ -5,7 +5,16 @@ import Console from '@/components/Console.vue'
 
 import { ALL_SHORTCUTS } from '@/config/shortcuts'
 import { WSconnect } from '@/config/osc'
-import Command from '@/components/Command.vue'
+import Command from '@/components/command/Command.vue'
+import Editor from '@/components/editor/Editor.vue'
+import { computed } from '@vue/reactivity'
+
+import { editorGetters } from '@/store/editor/getters'
+import { useStore } from 'vuex'
+
+
+const store=useStore()
+const editors= computed(()=>store.getters[editorGetters.GET_EDITORS])
 
 
 WSconnect()
@@ -14,17 +23,26 @@ ALL_SHORTCUTS()
 
 
 
+
+
 </script>
 
 <template>
 
   <div class="container">
-    <TitleBar/>
-
     <div class="d">
+      <TitleBar/>
+    </div>
+    <div class="a">
+      <Editor v-for="editor in editors" 
+        :key="editor" 
+        :name="editor.name"
+        :code="editor.code">
+      </Editor>
+    </div>
+    <div class="b">
       <Console/>
     </div>
-
     <div class="c">
       <Command/>
     </div>
@@ -50,11 +68,11 @@ ALL_SHORTCUTS()
   padding: 0;
   display: grid;
   grid-template-areas: 
-            "e e e"
+            "d d d"
             "a a b"
-            "a a c"
-            "a a d";
-  grid-template-rows: 30px 1fr 0.05fr 1fr;
+            "a a b"
+            "a a c";
+  grid-template-rows: 38px 1fr 0.05fr 0.1fr;
   grid-template-columns: 1fr 1fr 0.4fr;
 }
 
@@ -74,12 +92,6 @@ ALL_SHORTCUTS()
   overflow: auto;
   grid-area: a;
   max-width: 100%;
-  /* display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  align-content: stretch; */
-
-  /* display: grid; */
   grid-auto-flow: row;
   grid-gap:5px;
   /* justify-content: center; */
@@ -104,8 +116,6 @@ ALL_SHORTCUTS()
 
 .d{
   grid-area: d;
-  max-height: 100%;
-  overflow: scroll;
 }
 
 

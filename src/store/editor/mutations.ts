@@ -14,13 +14,15 @@ export enum editorMutations {
     RENAME_EDITOR = 'editor/RENAME_EDITOR',
     ERASE_EDITORS = 'editor/ERASE_EDITORS',
     COPY_EDITORS = 'editor/COPY_EDITORS',
-    PASTE_EDITORS = 'editor/PASTE_EDITORS'
+    PASTE_EDITORS = 'editor/PASTE_EDITORS',
+    FOCUSED_EDITOR = 'editor/FOCUSED_EDITOR'
 }
 
 export const mutations: MutationTree<EditorState> = {
 
     UPDATE_SNIPPETS (state, payload){
         state.snippets=payload
+        
     },
     UPDATE_HOTKEYS (state, payload){
         state.hotkeys=payload
@@ -35,6 +37,7 @@ export const mutations: MutationTree<EditorState> = {
                 ref: []
             }
         ]
+        
     },
 
     ADD_REFERENCE (state, payload){
@@ -103,6 +106,10 @@ export const mutations: MutationTree<EditorState> = {
                 ]
             }
         })
+    },
+
+    FOCUSED_EDITOR(state, payload){
+        state.focusedEditor=payload
     }
 
 }

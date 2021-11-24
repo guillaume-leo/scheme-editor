@@ -1,20 +1,18 @@
 import { Module } from "vuex";
-import { EditorState } from "./types";
+import { FsState } from "./types";
 import { RootState } from "../types";
 import { getters } from "./getters";
 import { mutations } from "./mutations";
 
-export const state: EditorState = {
-    editors:[],
-    snippets:[],
-    hotkeys:[],
-    copy:[],
-    focusedEditor:[]
+export const state: FsState = {
+        filePath: '',
+        fileContent:[],
+        hasChanged:true
 }
 
 const namespaced: boolean = true
 
-export const editor: Module <EditorState, RootState> = {
+export const fs: Module <FsState, RootState> = {
     namespaced,
     state,
     getters,
