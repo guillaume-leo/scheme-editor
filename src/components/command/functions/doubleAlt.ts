@@ -75,8 +75,6 @@ const handleDoublePressAlt = (key: KeyboardEvent) => {
         cmdSystem(menu(), 'key')
         if (store.getters[editorGetters.GET_FOCUSED_EDITOR]) storedRef = store.getters[editorGetters.GET_FOCUSED_EDITOR]
         storedRef.contentDOM?.blur()
-        console.log(storedRef);
-        
     }
 }
 
