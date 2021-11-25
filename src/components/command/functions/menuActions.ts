@@ -1,9 +1,15 @@
 import store from '@/store'
 import { writeFile, readTextFile } from '@tauri-apps/api/fs'
 import { save, open } from '@tauri-apps/api/dialog'
-import { parseBufferSnippets } from '../config/parseBufferSnippets'
-import { parseBufferHotKeys } from '../config/parseBufferHotKeys'
+import { parseBufferSnippets } from '../../editor/functions/parseBufferSnippets'
+import { parseBufferHotKeys } from '../../editor/functions/parseBufferHotKeys'
 import _ from 'lodash'
+import { editorMutations } from '@/store/editor/mutations'
+import { editorGetters } from '@/store/editor/getters'
+import { consoleMutations } from '@/store/console/mutations'
+import { editor } from '@/store/editor/types'
+import { fsGetters } from '@/store/fs/getters'
+import { fsMutations } from '@/store/fs/mutations'
 
 
 
@@ -15,32 +21,32 @@ import _ from 'lodash'
 
 const newFileAction = ()=>{
     // check if editors change, if yes confirm()
-    store.commit('editors/eraseEditors')
-    store.commit('file/eraseFilePath')
+    store.commit(editorMutations.ERASE_EDITORS)
+    // store.commit('file/eraseFilePath')
 }
 
 const saveAction = ()=>{
 
-    const editors = []
-    store.getters['editors/getEditors'].forEach(e => {
+    const editors: any[] = []
+    store.getters[editorGetters.GET_EDITORS].forEach((e:editor) => {
         editors.push({
             name:e.name,
             code:e.code
         })    
     })
-    const path = store.getters['file/getFilePath'] 
+    const path = store.getters[fsGetters.GET_FILE_PATH] 
     if (path.length > 0){
 
         writeFile({
             path: path,
             contents: JSON.stringify(editors)
         }).then(()=>{
-            store.commit('file/setFilePath', {
+            store.commit(fsMutations.SET_FILEPATH, {
                 filePath: path,
                 fileContent: editors
             })
-            store.commit('file/hasChanged',true)
-            return store.commit('console/print', `${path}`)
+            store.commit(fsMutations.HAS_CHANGED,false)
+            return store.commit(consoleMutations.PRINT, `${path}`)
         })
     }else{
         return saveAsAction()
@@ -49,8 +55,8 @@ const saveAction = ()=>{
 }
 
 const saveAsAction = ()=>{
-    const editors = []
-    store.getters['editors/getEditors'].forEach(e => {
+    const editors: any[] = []
+    store.getters[editorGetters.GET_EDITORS].forEach((e:editor) => {
         editors.push({
             name:e.name,
             code:e.code
@@ -68,12 +74,12 @@ const saveAsAction = ()=>{
             path: e,
             contents: JSON.stringify(editors)
         }).then(()=>{
-            store.commit('file/setFilePath', {
+            store.commit(fsMutations.SET_FILEPATH, {
                 filePath: e,
                 fileContent: editors
             })
-            store.commit('file/hasChanged',true)
-            return store.commit('console/print', `${e} have been written`)
+            store.commit(fsMutations.HAS_CHANGED,false)
+            return store.commit(consoleMutations.PRINT, `${e} have been written`)
         })  
     })
 
@@ -83,7 +89,7 @@ const saveAsAction = ()=>{
 
 const loadFileAction = ()=>{
 
-    store.commit('editors/eraseEditors')
+    store.commit(editorMutations.ERASE_EDITORS)
     open({
         filters: [{
             name:'',
@@ -92,16 +98,16 @@ const loadFileAction = ()=>{
     })
     .then((e)=>{
         if (e===null) return
-        readTextFile(e)
+        readTextFile(e as string)
         .then((text)=>{
             const content = JSON.parse(text)
-            content.map((el)=>{
-                store.commit('editors/newEditor', {
+            content.map((el: { name: any; code: any })=>{
+                store.commit(editorMutations.NEW_EDITOR, {
                     name:el.name, 
                     code:el.code
                 })
             })
-            store.commit('file/setFilePath', {
+            store.commit(fsMutations.SET_FILEPATH, {
                 filePath: e,
                 fileContent: content
             })
@@ -116,36 +122,36 @@ const loadFileAction = ()=>{
 *   ---------------
 */
 
-const addEditorAction = (editorName)=>{
-    const editorsName = store.getters['editors/getEditorsName']
-    if (editorsName.includes(editorName)) return store.commit('console/print', `error : ${editorName} already exist`)
-    store.commit('editors/newEditor', {
+const addEditorAction = (editorName: string)=>{
+    const editorsName = store.getters[editorGetters.GET_EDITORS_NAME]
+    if (editorsName.includes(editorName)) return store.commit(consoleMutations.PRINT, `error : ${editorName} already exist`)
+    store.commit(editorMutations.NEW_EDITOR, {
         name:editorName, 
-        code:''
+        code:'(define something 123)'
     })
 }
 
-const deleteEditorAction = (editorName)=>{
-    store.commit('editors/deleteEditor', {
+const deleteEditorAction = (editorName: string)=>{
+    store.commit(editorMutations.DELETE_EDITOR, {
         name:editorName
         })
 }
 
-const renameEditorAction = (text)=>{
+const renameEditorAction = (text: string)=>{
     const input = text.split(' ')
-    store.commit('editors/renameEditor', {
+    store.commit(editorMutations.RENAME_EDITOR, {
         name:input[0],
         newName:input[1]
         })
 }
 
-const copyEditorAction = (text)=>{
+const copyEditorAction = (text: string)=>{
     const input = text.split(' ')
-    store.commit('editors/copyEditors', input)
+    store.commit(editorMutations.COPY_EDITORS, input)
 }
 
 const pasteEditorAction = ()=>{
-    store.commit('editors/pasteEditors')
+    store.commit(editorMutations.PASTE_EDITORS)
     parseSnippetsAction()
 }
 
@@ -156,9 +162,9 @@ const pasteEditorAction = ()=>{
 */
 
 const parseSnippetsAction = ()=>{
-    const allEditors = store.getters['editors/getEditors']
-    let snippets = []
-    allEditors.forEach(e=>{
+    const allEditors = store.getters[editorGetters.GET_EDITORS]
+    let snippets: any[] = []
+    allEditors.forEach((e: { ref: { state: { doc: any } } })=>{
         if (e.ref) snippets.push(parseBufferSnippets(e.ref.state.doc))
     })
     snippets = _.flatten(snippets).filter((thing, index, self) =>
@@ -166,17 +172,17 @@ const parseSnippetsAction = ()=>{
             t.label === thing.label
         ))
     )
-    store.commit('editors/updateSnippets', snippets)
+    store.commit(editorMutations.UPDATE_SNIPPETS, snippets)
     snippets.reverse().forEach(e=>{
-        store.commit('console/print', `${e.label} ○ ${e.code}`)
+        store.commit(consoleMutations.PRINT, `${e.label} ○ ${e.code}`)
         
     })
 }
 
 const parseHotKeysAction = ()=>{
-    const allEditors = store.getters['editors/getEditors']
-    let hotkeys = []
-    allEditors.forEach(e=>{
+    const allEditors = store.getters[editorGetters.GET_EDITORS]
+    let hotkeys: any[] = []
+    allEditors.forEach((e: { ref: { state: { doc: any } } })=>{
         if (e.ref) hotkeys.push(parseBufferHotKeys(e.ref.state.doc, e.ref))
     })
     hotkeys = _.flatten(hotkeys).filter((thing, index, self) =>
@@ -184,9 +190,9 @@ const parseHotKeysAction = ()=>{
             t.hotkey === thing.hotkey
         ))
     )
-    store.commit('editors/updateHotKeys', hotkeys)    
+    store.commit(editorMutations.UPDATE_HOTKEYS, hotkeys)    
     hotkeys.reverse().forEach(e=>{
-        store.commit('console/print', `${e.hotkey} ○ ${e.code}`)
+        store.commit(consoleMutations.PRINT, `${e.hotkey} ○ ${e.code}`)
         
     })
 }

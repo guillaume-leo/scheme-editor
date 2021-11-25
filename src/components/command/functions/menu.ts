@@ -1,5 +1,7 @@
-import { menuActions } from '@/functions/menuActions'
+import { menuActions } from '@/components/command/functions/menuActions'
 import store from '@/store'
+import { consoleMutations } from '@/store/console/mutations'
+import { fsGetters } from '@/store/fs/getters'
 
 const loadConfirm = [
     {
@@ -13,7 +15,7 @@ const loadConfirm = [
         key: 'a',
         label: 'abort load',
         children:[],
-        action: ()=>store.commit('console/print', 'command aborted'),
+        action: ()=>store.commit(consoleMutations.PRINT, 'command aborted'),
         type:'key'
     }
 ]
@@ -30,7 +32,7 @@ const newFileConfirm = [
         key: 'a',
         label: 'abort new file',
         children:[],
-        action: ()=>store.commit('console/print', 'command aborted'),
+        action: ()=>store.commit(consoleMutations.PRINT, 'command aborted'),
         type:'key'
     }
 ]
@@ -41,9 +43,9 @@ const file = [
         label: 'new file',
         children:[],
         action:()=>{
-            const fileIsSafe = store.getters['file/getFileHasChanged']
-            if (!fileIsSafe) {
-                store.commit('console/print', 'File not saved, do you want to proceed?')
+            const editorHasChanged = store.getters[fsGetters.GET_HAS_CHANGED]
+            if (editorHasChanged) {
+                store.commit(consoleMutations.PRINT, 'File not saved, do you want to proceed?')
                 return newFileConfirm
             }
             menuActions.newFileAction()},
@@ -68,9 +70,9 @@ const file = [
         label: 'load',
         children:[],
         action:()=>{
-            const fileIsSafe = store.getters['file/getFileHasChanged']
-            if (!fileIsSafe) {
-                store.commit('console/print', 'File not saved, do you want to proceed?')
+            const editorHasChanged = store.getters[fsGetters.GET_HAS_CHANGED]
+            if (editorHasChanged) {
+                store.commit(consoleMutations.PRINT, 'File not saved, do you want to proceed?')
                 return loadConfirm
             }
             menuActions.loadFileAction()},
@@ -87,7 +89,7 @@ const editors = [
                 label: 'Write name and press Enter',
                 children:[],
                 type: 'key',
-                action: name=>menuActions.addEditorAction(name)
+                action: (name:string)=>menuActions.addEditorAction(name)
             }
         ],
         type:'word',
@@ -101,7 +103,7 @@ const editors = [
                 label: 'Write name and press Enter',
                 children:[],
                 type: 'key',
-                action: name=>menuActions.deleteEditorAction(name)
+                action: (name:string)=>menuActions.deleteEditorAction(name)
             }
         ],
         type: 'word',
@@ -115,7 +117,7 @@ const editors = [
                 label: 'Write name and press Enter',
                 children:[],
                 type: 'key',
-                action: name=>menuActions.renameEditorAction(name)
+                action: (name:string)=>menuActions.renameEditorAction(name)
             }
         ],
         type: 'word',
@@ -129,7 +131,7 @@ const editors = [
                 label: 'Write name(s) and press Enter',
                 children:[],
                 type: 'key',
-                action: name=>menuActions.copyEditorAction(name)
+                action: (name:string)=>menuActions.copyEditorAction(name)
             }
         ],
         type: 'word',

@@ -1,6 +1,6 @@
 <template>
   <div data-tauri-drag-region class="titlebar">
-      <div v-if="!hasChanged">
+      <div v-if="hasChanged">
         <p id='dot'>●</p>
       </div>
       <div>

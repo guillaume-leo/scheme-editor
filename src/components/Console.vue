@@ -1,24 +1,24 @@
+<script setup lang='ts'>
+
+import { computed } from '@vue/reactivity'
+import store from '@/store'
+import { consoleGetters } from '@/store/console/getters'
+
+const datas = computed(()=>store.getters[consoleGetters.GET_DATA])
+
+
+</script>
+
 <template>
 
-  <p v-for="data in getAllData" :key="data"> 
+  <p v-for="data in datas" :key="data"> 
       • <br>
       {{data.lineNumber}} • <br>
       {{data.text}} 
       <br>
   </p>
+
 </template>
-
-<script>
-
-export default {
-    name: 'Console',
-    computed:{
-      getAllData(){
-        return this.$store.getters['console/getData']
-      }
-    }
-}
-</script>
 
 <style scoped>
 
