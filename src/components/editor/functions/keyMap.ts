@@ -1,8 +1,27 @@
 import { WSsend } from "@/config/osc"
 import { keymap } from "@codemirror/view"
+import { isNumber } from "lodash";
 import { blink, removeMarks } from "./evalBlink"
 
+function getWordAt (str:string, pos:number) {
 
+  // Perform type conversions.
+  str = String(str);
+  pos = Number(pos) >>> 0;
+
+  // Search for the word's beginning and end.
+  const left = str.slice(0, pos + 1).search(/\S+$/),
+      right = str.slice(pos).search(/\s/);
+
+  // The last word in the string is a special case.
+  if (right < 0) {
+      return str.slice(left);
+  }
+
+  // Return the word, using the located bounds to extract it from the string.
+  return str.slice(left, right + pos);
+
+}
 
 export const keyMaps = (view: { state: any, dispatch: any })=> keymap.of([{
   key: "Mod-e",
@@ -80,5 +99,39 @@ export const keyMaps = (view: { state: any, dispatch: any })=> keymap.of([{
           }
       })
     }
-  }
+  },
+  {
+    key: "Mod-shift-ArrowUp",
+    preventDefault: true,
+    run: ()=>{
+      const cm = view.state
+      const currOffset = cm.selection.main.head
+      const currWordRange = cm.wordAt(currOffset) 
+      if (currWordRange === null) return
+      const currWord = cm.doc.toString().slice(currWordRange.from, currWordRange.to)
+      let currNumber = parseInt(currWord)
+      if (isNaN(currNumber)) return
+      currNumber ++
+      view.dispatch({
+        changes: {from: currWordRange.from, to:currWordRange.to, insert: currNumber.toString()}
+      })
+    }
+  },
+  {
+    key: "Mod-shift-ArrowDown",
+    preventDefault: true,
+    run: ()=>{
+      const cm = view.state
+      const currOffset = cm.selection.main.head
+      const currWordRange = cm.wordAt(currOffset) 
+      if (currWordRange === null) return
+      const currWord = cm.doc.toString().slice(currWordRange.from, currWordRange.to)
+      let currNumber = parseInt(currWord)
+      if (isNaN(currNumber) || currNumber === 0) return
+      currNumber --
+      view.dispatch({
+        changes: {from: currWordRange.from, to:currWordRange.to, insert: currNumber.toString()}
+      })
+    }
+  },
 ])
