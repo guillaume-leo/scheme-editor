@@ -1,6 +1,6 @@
 # scheme-editor - v1.0 (Oct 2021)
 
-Scheme-editor, is an open source code editor created with the idea of being used in live coding situations, and in combination with the [Scheme For Max external](https://github.com/iainctduncan/scheme-for-max) made by Iain Duncan.
+Scheme-editor is an open source code editor created with the idea of being used in live coding situations, and in combination with the [Scheme For Max external](https://github.com/iainctduncan/scheme-for-max) made by Iain Duncan.
 
 For the reason that this project is a new born, it should be considered as a Beta Release for the moment and it may change continuously. But however, is already available on Windows, Mac and Linux in the download section.
 
