@@ -4,7 +4,6 @@ import TitleBar from '@/components/TitleBar.vue'
 import Console from '@/components/Console.vue'
 
 import { ALL_SHORTCUTS } from '@/config/shortcuts'
-import { WSconnect } from '@/config/osc'
 import Command from '@/components/command/Command.vue'
 import Editor from '@/components/editor/Editor.vue'
 import { computed } from '@vue/reactivity'
@@ -13,11 +12,10 @@ import { editorGetters } from '@/store/editor/getters'
 import { useStore } from 'vuex'
 
 
+
 const store=useStore()
 const editors= computed(()=>store.getters[editorGetters.GET_EDITORS])
 
-
-WSconnect()
 
 ALL_SHORTCUTS()
 
