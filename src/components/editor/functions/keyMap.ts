@@ -1,4 +1,4 @@
-import { WSsend } from "@/config/osc"
+import { udpSend } from "@/config/osc"
 import { keymap } from "@codemirror/view"
 import { blink, removeMarks } from "./evalBlink"
 
@@ -28,7 +28,7 @@ export const keyMaps = (view: { state: any, dispatch: any })=> keymap.of([{
       if (start < currOffset && currOffset < end){
         blink(view, start, end)
         setTimeout(()=>{removeMarks(view, start, end)}, 1000)
-        WSsend(sExp)
+        udpSend(sExp)
       }
       return
     }
@@ -39,7 +39,7 @@ export const keyMaps = (view: { state: any, dispatch: any })=> keymap.of([{
     if (start < currOffset && currOffset < end){
       blink(view, start, end)
       setTimeout(()=>{removeMarks(view, start, end)}, 1000)
-      WSsend(sExp)
+      udpSend(sExp)
     }        
   }
   },

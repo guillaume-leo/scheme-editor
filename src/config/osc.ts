@@ -9,7 +9,7 @@ osc.onopen = () => {
   }, 1000);
 };
 
-export function WSsend(text:string) {
+export function udpSend(text:string) {
     console.log(text);
     osc.send(text)
     store.commit(consoleMutations.PRINT,text);

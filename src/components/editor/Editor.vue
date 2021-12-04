@@ -15,7 +15,7 @@ import { editorMutations } from "@/store/editor/mutations"
 import { menuActions } from "../command/functions/menuActions"
 import { computed, onMounted, watch } from "vue"
 import { editorGetters } from "@/store/editor/getters"
-import { WSsend } from "@/config/osc"
+import { udpSend } from "@/config/osc"
 import { blink } from "./functions/evalBlink"
 
 
@@ -89,14 +89,14 @@ watch(()=>[...allSnippets.value], (newVal)=>{
 const allHotkeys = computed(()=>store.getters[editorGetters.GET_HOTKEYS])
 
 watch(()=>[...allHotkeys.value], (newVal)=>{
-       if (newVal.length < 1) return
+      if (newVal.length < 1) return
         let newHotKeys:any[] = []
         newVal.forEach(e => {
           newHotKeys.push({
             key: e.hotkey,
             preventDefault: true,
             run: ()=>{
-              WSsend(e.code)
+              udpSend(e.code)
               blink(view, e.start,e.end)
             }
           })
