@@ -8,39 +8,45 @@ export const keyMaps = (view: { state: any, dispatch: any })=> keymap.of([{
   key: "Mod-e",
   preventDefault: true,
   run: ():any=>{
-    let sExp =''
     const cm = view.state
     let currOffset = cm.selection.main.head
+    
     if (currOffset === 0) return 
-    const currText = cm.doc.toString()
+    
+    const currText: any = cm.doc.toString()
+
     if (currText[currOffset - 1] === '(') currOffset ++ 
+
     const beforeCursor = currText.slice(0,currOffset)
-    const afterCursor = currText.slice(currOffset)
-    // compute the beggining of the s-exp from cursor
-    let start = beforeCursor.match(/^\([a-zA-Z]/gm)
-    if (start===null) return 
-    start = beforeCursor.lastIndexOf(start.pop())
-    // compute end of the s-exp from cursor
-    let end = afterCursor.match(/^\([a-zA-Z]/gm)
-    if (end === null) {
-      end = currText.lastIndexOf(currText.match(/\)/gm).pop()) + 1
-      sExp = currText.slice(start, end)
-      if (start < currOffset && currOffset < end){
-        blink(view, start, end)
-        setTimeout(()=>{removeMarks(view, start, end)}, 1000)
-        udpSend(sExp)
-      }
-      return
+
+
+    const reSexpStart = /^\([a-zA-Z]/gm
+    let sExpStartIndex: number = -1
+    let match:any
+    while ((match = reSexpStart.exec(beforeCursor)) !== null) {  
+      sExpStartIndex = match && match.index  
     }
-    const nextExpIndex = /^\([a-zA-Z]/gm.exec(afterCursor)?.index  + beforeCursor.length
-    end = currText.slice(0, nextExpIndex)
-    end = end.lastIndexOf(end.match(/\)/gm).pop()) + 1
-    sExp = currText.slice(start, end)
-    if (start < currOffset && currOffset < end){
-      blink(view, start, end)
-      setTimeout(()=>{removeMarks(view, start, end)}, 1000)
-      udpSend(sExp)
-    }        
+    
+
+    if (sExpStartIndex===-1) return 
+
+    let sExpEndIndex: number = 1
+    
+    for (let i = sExpStartIndex + 1; i <= currText.length; i++){
+      if (currText[i] === '(') sExpEndIndex ++
+      if (currText[i] === ')') sExpEndIndex! --
+      if (sExpEndIndex === 0){
+        sExpEndIndex = i + 1
+        break
+      }
+      
+    }
+      if (sExpStartIndex < currOffset && currOffset < sExpEndIndex){
+        blink(view, sExpStartIndex, sExpEndIndex)
+        setTimeout(()=>{removeMarks(view, sExpStartIndex, sExpEndIndex)}, 1000)
+        udpSend(currText.slice(sExpStartIndex, sExpEndIndex))
+      }
+      return     
   }
   },
   {
@@ -55,7 +61,7 @@ export const keyMaps = (view: { state: any, dispatch: any })=> keymap.of([{
       const afterCursor = currText.slice(currOffset)
       const nextExp = afterCursor.match(/^\([a-zA-Z]/gm)
       if (nextExp === null) return
-      const newPos = afterCursor.indexOf(nextExp[0])+beforeCursor.length + 1
+      const newPos = afterCursor.indexOf('\n' + nextExp[0])+beforeCursor.length + 2
       view.dispatch({
           selection: {
           anchor: newPos
@@ -73,7 +79,7 @@ export const keyMaps = (view: { state: any, dispatch: any })=> keymap.of([{
       const beforeCursor = currText.slice(0,currOffset)
       const prevExp = beforeCursor.match(/^\([a-zA-Z]/gm)
       if (prevExp===null) return 
-      const newPos = beforeCursor.lastIndexOf(prevExp.pop()) + 1
+      const newPos = beforeCursor.lastIndexOf('\n' + prevExp.pop()) + 2
       view.dispatch({
           selection: {
           anchor: newPos
