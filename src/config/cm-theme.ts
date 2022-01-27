@@ -97,7 +97,7 @@ export const oneDarkTheme  = EditorView.theme({
     {tag: [t.definition(t.name), t.separator],
      color: 'pink'},
     {tag: [t.typeName, t.className, t.number, t.changed, t.annotation, t.modifier, t.self, t.namespace],
-     color: '#ff9e64'}, // numbers
+     color: '#0dd75d'}, // numbers
     {tag: [t.operator, t.operatorKeyword, t.url, t.escape, t.regexp, t.link, t.special(t.string)],
      color: '#10B981'},
     {tag: [t.meta, t.comment],

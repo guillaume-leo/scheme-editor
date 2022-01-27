@@ -23,7 +23,7 @@ const blinkField = StateField.define<DecorationSet>({
     }
     return blinks
   },
-  provide: f => EditorView.decorations.from(f)
+  provide: (f:any) => EditorView.decorations.from(f)
 })
 
 export function removeMarks(view:any, a: number, b: number) {

@@ -74,17 +74,17 @@ export default {
       async close(){ 
         const result = await confirm("Do you really want to leave?")
         if (result) appWindow.close()
-      }
+      } 
   },
   computed:{
       getFilePath(){
-        return this.$store.getters['file/getFilePath']
+        return this.$store.getters['fs/GET_FILE_PATH']
       },
       getFileHasChanged(){
-        return this.$store.getters['file/getFileHasChanged']
+        return this.$store.getters['fs/GET_HAS_CHANGED']
       },
       getFileContent(){
-        return this.$store.getters['file/getFileContent']
+        return this.$store.getters['fs/GET_FILE_CONTENT']
       },
       getEditors(){
         return this.$store.getters['editors/getEditors']

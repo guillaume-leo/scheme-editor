@@ -62,10 +62,12 @@ export const keyMaps = (view: { state: any, dispatch: any })=> keymap.of([{
       const nextExp = afterCursor.match(/^\([a-zA-Z]/gm)
       if (nextExp === null) return
       const newPos = afterCursor.indexOf('\n' + nextExp[0])+beforeCursor.length + 2
+      
       view.dispatch({
           selection: {
           anchor: newPos
-          }
+          },
+          scrollIntoView:true
       })
     }
   },
@@ -83,7 +85,8 @@ export const keyMaps = (view: { state: any, dispatch: any })=> keymap.of([{
       view.dispatch({
           selection: {
           anchor: newPos
-          }
+          },
+          scrollIntoView:true
       })
     }
   }

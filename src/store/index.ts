@@ -3,6 +3,7 @@ import { RootState } from './types'
 import { console } from '@/store/console/index'
 import { command } from '@/store/command/index'
 import { editor } from '@/store/editor/index'
+import { fs } from '@/store/fs/index'
 
 
 const store: StoreOptions<RootState> = {
@@ -12,7 +13,8 @@ const store: StoreOptions<RootState> = {
   modules:{
     console,
     editor,
-    command
+    command,
+    fs
   }
 }
 

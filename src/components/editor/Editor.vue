@@ -12,7 +12,7 @@ import { onChange } from './functions/onChangeUpdate'
 import { EditorView, keymap } from "@codemirror/view"
 import store from "@/store"
 import { editorMutations } from "@/store/editor/mutations"
-import { menuActions } from "../command/functions/menuActions"
+// import { menuActions } from "../command/functions/menuActions"
 import { computed, onMounted, watch } from "vue"
 import { editorGetters } from "@/store/editor/getters"
 import { udpSend } from "@/config/osc"
@@ -68,7 +68,7 @@ store.commit(editorMutations.ADD_REFERENCE, {
 
 
 
-menuActions.parseSnippetsAction()
+// menuActions.parseSnippetsAction()
 
 const allSnippets = computed(()=>store.getters[editorGetters.GET_SNIPPETS])
 
